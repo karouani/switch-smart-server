@@ -49,13 +49,13 @@ function _Getdata(table, type, sendCallback) {
 
 module.exports = {
   _getAllUsers(socketId, callback) {
-    knex 
+    knex
       .select()
       .from("users")
       .then(function (users) {
         callback({
           Error: false,
-          socketId: socketId, 
+          socketId: socketId,
           Users: { users },
         });
       })
@@ -234,22 +234,19 @@ module.exports = {
           .where("Department", props.Userdata.data.department)
           .then(function (product) {
             console.log(product);
-            
+
             sendCallback({
               socketId: props.socketId,
               productData: { product },
             });
           });
-      }); 
+      });
   },
   _GetDepartments(props, sendCallback) {
-    
     knex
       .select()
       .from("departments_config")
-      .then(function (departments) { 
-        console.log(departments);
-        
+      .then(function (departments) {
         if (departments.length !== 0)
           sendCallback({
             socketId: props.socketId,
@@ -274,20 +271,21 @@ module.exports = {
               id: CreateId(),
               dep_name: props.Userdata.department,
               theme: "light",
-              phone: "",
-              shopNo: "",
-              road: "",
-              state: "",
-              country: "",
-              tpin: "",
-              taxType: "VAT",
-              taxRat: 16,
-              association: "",
+              phone: props.Userdata.phone,
+              shopNo: props.Userdata.shopNo,
+              road: props.Userdata.road,
+              state: props.Userdata.state,
+              country: props.Userdata.country,
+              tpin: props.Userdata.tpin,
+              taxType: props.Userdata.taxType,
+              taxRat: props.Userdata.taxRat,
+              date: props.Userdata.date,
+              user: props.Userdata.user,
               notifications: { notificationId: CreateId(), list: [] },
             })
             .then(function () {
               knex
-                .select() 
+                .select()
                 .from("departments_config")
                 .where("dep_name", props.Userdata.department)
                 .then(function (departments) {
@@ -296,9 +294,76 @@ module.exports = {
                     data: { alreadyExist: false, departments },
                   });
                 });
-            }); 
+            });
         }
       }
     );
+  },
+
+  _UpdateUsersDepartment(props, sendCallback) {
+    knex
+      .select()
+      .from("departments_config")
+      .where("dep_name", props.Userdata.department)
+      .then(function (department) {
+        // console.log(department[0].user.Users);
+        var key = department[0].user.Users.length + 1;
+
+        var temp = {
+          id: props.Userdata.id,
+          key: key,
+          pin: props.Userdata.pin,
+          userName: props.Userdata.userName,
+          prevarges: props.Userdata.prevarges,
+          department: props.Userdata.department,
+          notifications: props.Userdata.notifications,
+        };
+
+        department[0].user.Users.push(temp);
+
+        knex("departments_config")
+          .where("dep_name", props.Userdata.department)
+          .update({
+            user: { Users: department[0].user.Users },
+          })
+          .then(function () {
+            knex
+              .select()
+              .from("departments_config")
+              .then(function (departments) {
+                console.log(departments);
+                
+                sendCallback({
+                  socketId: props.socketId,
+                  data: { exist: true, departments },
+                });
+              });
+          });
+      });
+  },
+
+  _EditDepartment(props, sendCallback) {
+    knex("departments_config")
+      .where("id", props.Userdata.id)
+      .update({
+        dep_name: props.Userdata.dep_name,
+        phone: props.Userdata.phone,
+        shopNo: props.Userdata.shopNo,
+        road: props.Userdata.road,
+        tpin: props.Userdata.tpin,
+        taxType: props.Userdata.taxType,
+        taxRat: props.Userdata.taxRat,
+      })
+      .then(function () {
+        knex
+          .select()
+          .from("departments_config")
+          .then(function (departments) {
+            sendCallback({
+              socketId: props.socketId,
+              data: { exist: true, departments },
+            });
+          });
+      });
   },
 };

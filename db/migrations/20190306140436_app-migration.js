@@ -90,7 +90,8 @@ exports.up = function (knex, Promise) {
     table.string("tpin").notNullable();
     table.string("taxType").notNullable();
     table.integer("taxRat").notNullable();
-    table.string("association").notNullable();
+    table.jsonb("date").notNullable();
+    table.jsonb("user").notNullable();
     table.jsonb("notifications").notNullable();
   });
 };

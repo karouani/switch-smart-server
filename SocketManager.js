@@ -9,19 +9,70 @@ const {
   GETDEPARTMENTCOFIG,
 } = require("./events");
 const _ = require("lodash");
-const { _SalesReports,_GetDepartments,_SetDepartment } = require("./db/queries");
+const {
+  _SalesReports,
+  _GetDepartments,
+  _SetDepartment,
+  _EditDepartment,
+  _UpdateUsersDepartment,
+} = require("./db/queries");
 require("custom-env").env();
 const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
 
 require("custom-env").env();
+
+// var count = 0;
+
+// var $ipsConnected = [];
+
+// io.on("connection", function (socket) {
+//   var $ipAddress = socket.handshake.address;
+
+//   if (!$ipsConnected.hasOwnProperty($ipAddress)) {
+//     $ipsConnected.push(socket.id);
+
+//     count++;
+// console.log(io.engine.clients);
+
+//     socket.emit("counter", { count: count });
+//   }
+
+//   console.log("client is connected");
+
+//   /* Disconnect socket */
+
+//   socket.on("disconnect", function () {
+//     if ($ipsConnected.hasOwnProperty($ipAddress)) {
+//       delete $ipsConnected[$ipAddress];
+
+//       count--;
+
+//       socket.emit("counter", { count: count });
+//     }
+//   });
+// });
+
+var connectedUsers = [];
 
 module.exports = function (socket) {
   socket.on("connected", () => {
     console.log(socket.id);
   });
 
-  socket.on("UserConnected", (userId) => {
-    console.log(userId);
+  socket.on("UserConnected", (props) => {
+    let data = {
+      data: props,
+      socketId: socket.id,
+    };
+    var users = _.findIndex(connectedUsers, data);
+    if (users === -1) {
+      connectedUsers.push(data);
+      io.emit("DEP_LOGGEDIN", {
+        name: data.data.dep_name,
+        users: connectedUsers,
+      });
+      // console.log(`${data.data.dep_name} has loggedIn`);
+    }
   });
 
   socket.on("disconnect", () => {
@@ -29,30 +80,48 @@ module.exports = function (socket) {
       socketId: socket.id,
       _type: "remove",
     };
+    connectedUsers = connectedUsers.filter((x) => x.socketId !== socket.id);
+    console.log(connectedUsers);
+
+    // connectedUsers.map((id, index) => {
+    //   if (id.socketId === socket.id) {
+    //     console.log(`${id.data.dep_name} has loggedOut`);
+    //     connectedUsers.slice(index, 1);
+    //   }
+    // });
   });
 
-  socket.on("DEP_CONNECTED", (props) => {
-    let data = {
-      data: props,
-      socketId: socket.id,
-      _type: "set",
-    };
+  socket.on("SEND_TRANSTION", (props) => {
+    connectedUsers.map((list) => {
+      if (props.dep === list.data.dep_name) {
+        console.log(list.socketId); 
+        io.to(list.socketId).emit("SEND_NOTIFICATION", props);
+      }
+    });
   });
 
   socket.on(USER_CONNECTED, (props) => {
     let data = {
-      data: props,
+      data: props, 
       socketId: socket.id,
       _type: "LoggedIn",
     };
+  });
+
+  socket.on("UPDATEUSERS", (data) => {
+    let Data = {
+      Userdata: data,
+      socketId: socket.id,
+    };
+    _UpdateUsersDepartment(Data, (callback) => {});
   });
 
   socket.on(GETDEPARTMENTS, (data) => {
     let Data = {
       Userdata: data,
       socketId: socket.id,
-    }; 
-    _GetDepartments(Data, (callback) => {   
+    };
+    _GetDepartments(Data, (callback) => {
       io.to(callback.socketId).emit("DEP_RESULT", callback.data);
     });
   });
@@ -67,11 +136,15 @@ module.exports = function (socket) {
     });
   });
 
-  socket.on(GETDEPARTMENTCOFIG, (data) => {
+  socket.on("EDITDEPARTMENTCOFIG", (data) => {
     let Data = {
       Userdata: data,
       socketId: socket.id,
     };
+
+    _EditDepartment(Data, (callback) => {
+      io.to(callback.socketId).emit("DEP_SET", callback.data);
+    });
   });
 
   socket.on("GETALLDEPARTMENTS", (data) => {
