@@ -16,6 +16,7 @@ const {
   _EditDepartment,
   _UpdateUsersDepartment,
 } = require("./db/queries");
+const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
 const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
 
@@ -94,7 +95,7 @@ module.exports = function (socket) {
   socket.on("SEND_TRANSTION", (props) => {
     connectedUsers.map((list) => {
       if (props.dep === list.data.dep_name) {
-        console.log(list.socketId); 
+        console.log(list.socketId);
         io.to(list.socketId).emit("SEND_NOTIFICATION", props);
       }
     });
@@ -102,7 +103,7 @@ module.exports = function (socket) {
 
   socket.on(USER_CONNECTED, (props) => {
     let data = {
-      data: props, 
+      data: props,
       socketId: socket.id,
       _type: "LoggedIn",
     };
@@ -183,6 +184,11 @@ module.exports = function (socket) {
       io.to(callback.socketId).emit("SALESREPORTLIST", callback.productData);
     });
   });
+
+  socket.on("UPDATENEWPROUDCT", (data) => {
+    HandelNewProducts(data.data, (callback) => {});
+    io.emit("UPDATEPRODUSTS", data);
+  }); 
 
   socket.on(HANDEL_WORKPERIODS, (data) => {
     let Data = {
