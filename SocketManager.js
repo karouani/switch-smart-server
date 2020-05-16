@@ -125,6 +125,8 @@ module.exports = function (socket) {
       socketId: socket.id,
     };
     _GetDepartments(Data, (callback) => {
+      console.log(callback);
+      
       io.to(callback.socketId).emit("DEP_RESULT", callback.data);
     });
   });
