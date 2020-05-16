@@ -93,9 +93,11 @@ module.exports = function (socket) {
   });
 
   socket.on("SEND_TRANSTION", (props) => {
+    // console.log(props); 
+    // console.log(props);
     connectedUsers.map((list) => {
-      if (props.dep === list.data.dep_name) {
-        console.log(list.socketId);
+      if (props.to === list.data.dep_name) {
+        
         io.to(list.socketId).emit("SEND_NOTIFICATION", props);
       }
     });
