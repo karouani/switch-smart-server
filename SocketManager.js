@@ -223,8 +223,15 @@ module.exports = function (socket) {
 
   socket.on("UPDATENEWPROUDCT", (data) => {
     HandelNewProducts(data, (callback) => {
-      // console.log(callback);
       io.emit("UPDATEPRODUSTS", callback);
+    });
+  });
+  
+  socket.on("UPDATEINVENTORTY", (data) => {
+    console.log(data);
+    HandelNewProducts(data, (callback) => {
+      // console.log(callback);
+      // io.emit("UPDATEINVENTORTY", callback);
     });
   });
 

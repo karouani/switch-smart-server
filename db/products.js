@@ -87,8 +87,8 @@ module.exports = {
                 department: props.from,
               })
               .then(function () {
-                if (isMulity) { 
-                  props.data.portion.map((data) => { 
+                if (isMulity) {
+                  props.data.portion.map((data) => {
                     knex("mulitProducts")
                       .insert({
                         id: CreateId(),
@@ -319,39 +319,45 @@ module.exports = {
         break;
 
       case "Add_filter":
-        console.log(props.data.taxMapping.data);
-        props.data.taxMapping.data.map((mainList) => {
-          // switch (mainList.add_all_group) {
-          //   case true:
-          //     knex("products")
-          //       .where({ category: mainList.recipes })
-          //       .update({
-          //         isTaxEnabled: false,
-          //       })
-          //       .then(function (data) {
-          //       });
-          //     break;
-          //   case true:
-          //     knex("products")
-          //       .where({ category: mainList.recipes })
-          //       .update({
-          //         isTaxEnabled: false,
-          //       })
-          //       .then(function (data) {
-          //       });
-          //     break;
-          // }
+        props.data.taxMapping.map((list) => {
+          knex("products")
+            .where({ productKey: list.productKey })
+            .andWhere({ department: props.dep })
+            .update({
+              isTaxEnabled: false,
+            })
+            .then(function (data) {
+              sendCallback({
+                isSet: true,
+                type: "Add_filter",
+              });
+            });
         });
 
         break;
+
       case "remove_filter":
+        props.data.taxMapping.map((list) => {
+          knex("products")
+            .where({ productKey: list.productKey })
+            .andWhere({ department: props.dep })
+            .update({
+              isTaxEnabled: true,
+            })
+            .then(function (data) {
+              sendCallback({
+                isSet: true,
+                type: "Add_filter",
+              });
+            });
+        });
         break;
 
       case "add_to_store":
-        props.purchaseSelected.map((nodes) => {
-          // console.log(nodes);
+        props.data.purchaseSelected.map((nodes) => {
           knex("products")
             .where({ productKey: nodes.productKey })
+            .andWhere({ department: props.dep })
             .update({
               amountInstore: nodes.quantity
                 ? nodes.amountInstore + nodes.quantity
@@ -361,20 +367,16 @@ module.exports = {
             .then(function (data) {
               knex("Tabs")
                 .where({ tabname: nodes.group })
+                .andWhere({ department: props.dep })
                 .update({
                   isInstore: true,
                 })
-                .then(function (data) {
-                  sendCallback({
-                    isSet: true,
-                    data: {
-                      type: "add_to_store",
-                      name: props.purchaseSelected[0].ItemName,
-                      number: props.purchaseSelected.length,
-                    },
-                  });
-                });
+                .then(function (data) {});
             });
+        });
+
+        sendCallback({
+          isSet: true,
         });
 
         break;
