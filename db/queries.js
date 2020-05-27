@@ -1,5 +1,6 @@
 const knex = require("../knex"); // the connection!
 const uuidv4 = require("uuid/v4");
+const { HandelNewProducts } = require("./products");
 
 function CreateId() {
   return uuidv4();
@@ -203,7 +204,7 @@ module.exports = {
   },
 
   _SalesReports(props, sendCallback) {
-    knex("sales")
+    knex("sales_reports_tikets")
       .insert({
         id: props.Userdata.data.id,
         Year: props.Userdata.data.year,
@@ -230,18 +231,100 @@ module.exports = {
       .then(function () {
         knex
           .select()
-          .from("sales")
+          .from("sales_reports_totals")
           .where("Department", props.Userdata.data.department)
-          .then(function (product) {
-            console.log(product);
+          .then(function (MainData) {
+            if (MainData.length === 0) {
+              knex("sales_reports_totals")
+                .insert({
+                  id: props.Userdata.data.id,
+                  Year: props.Userdata.data.year,
+                  Day: props.Userdata.data.day,
+                  Month: props.Userdata.data.month,
+                  SrNo: 1,
+                  GrandTotal: props.Userdata.data.GrandTotal,
+                  AmountPaid: props.Userdata.data.AmountPaid,
+                  ChangeDue: props.Userdata.data.ChangeDue,
+                  Balance: props.Userdata.data.Balance,
+                  Discount: props.Userdata.data.Discount,
+                  Date: props.Userdata.data.Date,
+                  Department: props.Userdata.data.department,
+                  totalTaxFinal: props.Userdata.data.totalTaxFinal,
+                  totalTax: props.Userdata.data.totalTax,
+                  time: props.Userdata.data.time,
+                })
+                .then(function () {});
+            } else {
+              knex
+                .select()
+                .from("sales_reports_totals")
+                .where("Date", props.Userdata.data.Date)
+                .then(function (data) {
+                  if (data.length !== 0) {
+                    // console.log(data);
+                    // console.log(props.data);
 
-            sendCallback({
-              socketId: props.socketId,
-              productData: { product },
-            });
+                    knex("sales_reports_totals")
+                      .where("Date", props.Userdata.data.Date)
+                      .update({
+                        GrandTotal:
+                          props.Userdata.data.GrandTotal + data[0].GrandTotal,
+                        AmountPaid:
+                          props.Userdata.data.AmountPaid + data[0].AmountPaid,
+                        ChangeDue:
+                          props.Userdata.data.ChangeDue + data[0].ChangeDue,
+                        Balance: props.Userdata.data.Balance + data[0].Balance,
+                        Discount:
+                          props.Userdata.data.Discount + data[0].Discount,
+                        totalTaxFinal:
+                          props.Userdata.data.totalTaxFinal +
+                          parseInt(data[0].totalTaxFinal, 2),
+                        totalTax:
+                          props.Userdata.data.totalTax +
+                          parseInt(data[0].totalTax, 2),
+                      })
+                      .then(function () {});
+                  } else {
+                    knex("sales_reports_totals")
+                      .insert({
+                        id: props.Userdata.data.id,
+                        Year: props.Userdata.data.year,
+                        Day: props.Userdata.data.day,
+                        Month: props.Userdata.data.month,
+                        SrNo: MainData.length + 1,
+                        GrandTotal: props.Userdata.data.GrandTotal,
+                        AmountPaid: props.Userdata.data.AmountPaid,
+                        ChangeDue: props.Userdata.data.ChangeDue,
+                        Balance: props.Userdata.data.Balance,
+                        Discount: props.Userdata.data.Discount,
+                        Date: props.Userdata.data.Date,
+                        Department: props.Userdata.data.department,
+                        totalTaxFinal: props.Userdata.data.totalTaxFinal,
+                        totalTax: props.Userdata.data.totalTax,
+                        time: props.Userdata.data.time,
+                      })
+                      .then(function () {});
+                  }
+                });
+            }
           });
       });
   },
+
+  _GetSalesReports(props, sendCallback) {
+    knex
+      .select()
+      .from("sales_reports_totals")
+      .where({ Department: props.Userdata.data })
+      .andWhere({ [props.Userdata.dateType]: props.Userdata.date })
+      .then(function (data) {
+        sendCallback({
+          socketId: props.socketId,
+          data,
+        });
+      });
+  },
+
   _GetDepartments(props, sendCallback) {
     knex
       .select()
@@ -331,8 +414,6 @@ module.exports = {
               .select()
               .from("departments_config")
               .then(function (departments) {
-                console.log(departments);
-                
                 sendCallback({
                   socketId: props.socketId,
                   data: { exist: true, departments },
@@ -365,5 +446,14 @@ module.exports = {
             });
           });
       });
+  },
+
+  _GetBackUp(props, sendCallback) {
+    HandelNewProducts(props, (callback) => {
+      sendCallback({
+        socketId: props.socketId,
+        data: callback,
+      });
+    });
   },
 };

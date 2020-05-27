@@ -15,6 +15,7 @@ const {
   _SetDepartment,
   _EditDepartment,
   _UpdateUsersDepartment,
+  _GetBackUp,_GetSalesReports,
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
@@ -82,7 +83,7 @@ module.exports = function (socket) {
       _type: "remove",
     };
     connectedUsers = connectedUsers.filter((x) => x.socketId !== socket.id);
-    console.log(connectedUsers);
+    // console.log(connectedUsers);
 
     // connectedUsers.map((id, index) => {
     //   if (id.socketId === socket.id) {
@@ -93,13 +94,34 @@ module.exports = function (socket) {
   });
 
   socket.on("SEND_TRANSTION", (props) => {
-    // console.log(props); 
-    // console.log(props);
+    // console.log(connectedUsers);
     connectedUsers.map((list) => {
       if (props.to === list.data.dep_name) {
-        
-        io.to(list.socketId).emit("SEND_NOTIFICATION", props);
+        // console.log(list.socketId);
+        io.to(list.socketId).emit("TRANSFER_NOTIFICATION", props);
       }
+    });
+  });
+  socket.on("GETPRODUCTES", (props) => {
+    var data = {
+      socketId: socket.id,
+    };
+    connectedUsers.map((list) => {
+      if (props.to === list.data.dep_name) {
+        // console.log(list.socketId);
+        io.to(list.socketId).emit("TRANSFER_NOTIFICATION", props);
+      }
+    });
+  });
+
+  socket.on("GETBACKUP", (props) => {
+    var data = {
+      data: props,
+      socketId: socket.id,
+    };
+
+    _GetBackUp(data, (callback) => {
+      io.to(callback.socketId).emit("BACKUPFILES", callback.data);
     });
   });
 
@@ -125,10 +147,9 @@ module.exports = function (socket) {
       socketId: socket.id,
     };
     _GetDepartments(Data, (callback) => {
-      console.log(callback);
-      
+      // console.log(callback);
       io.to(callback.socketId).emit("DEP_RESULT", callback.data);
-    });   
+    });
   });
 
   socket.on(SETDEPARTMENTS, (data) => {
@@ -164,7 +185,7 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-    console.log(Data);
+    // console.log(Data);
   });
 
   socket.on("UPDATEPRODCTS", (data) => {
@@ -172,10 +193,6 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-    console.log(Data);
-    // _putNewProudct(Data,reciveCallback=>{
-
-    // })
   });
 
   socket.on("SALESREPORT", (data) => {
@@ -189,33 +206,42 @@ module.exports = function (socket) {
     });
   });
 
+  socket.on("GETSALESREPORT", (data) => {
+    let Data = {
+      Userdata: data,
+      socketId: socket.id,
+    };
+
+    // console.log(Data);
+    _GetSalesReports(Data, (revicedCallback) => {
+      io.to(revicedCallback.socketId).emit(
+        "SALESREPORTSALET",
+        revicedCallback.data
+      );
+    });
+  });
+
   socket.on("UPDATENEWPROUDCT", (data) => {
-    HandelNewProducts(data.data, (callback) => {});
-    io.emit("UPDATEPRODUSTS", data);
-  }); 
+    HandelNewProducts(data, (callback) => {
+      // console.log(callback);
+      io.emit("UPDATEPRODUSTS", callback);
+    });
+  });
+
+  socket.on("DELETEPRODUCT", (datalist) => {
+    var data = {
+      data: datalist,
+      socketId: socket.id,
+    };
+    HandelNewProducts(data, (callback) => {
+      io.emit("DELETEPRODUCTDONE", callback);
+    });
+  });
 
   socket.on(HANDEL_WORKPERIODS, (data) => {
     let Data = {
       Userdata: data,
       socketId: socket.id,
     };
-
-    // WorkPeriod
-    // switch (data._type) {
-    //   case "start":
-    //     StartWorkPeriod(Data, (callback) => {
-    //       if (callback.isDone) io.to(callback.id).emit("WORKPERIOD_DONE");
-    //       else io.to(callback.id).emit("WORKPERIOD_FAILED");
-    //     });
-    //     break;
-    //   case "end":
-    //     EndWorkPeriod(Data, (callback) => {
-    //       console.log(callback);
-    //     });
-    //     break;
-
-    //   default:
-    //     break;
-    // }
   });
 };
