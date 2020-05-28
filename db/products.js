@@ -23,6 +23,18 @@ var month = check.format("MMMM"); // => ('January','February.....)
 var year = check.format("YYYY");
 var time = check.format("LT");
 
+function GetData(props, hook, callback) {
+  hook
+    .select()
+    .from(props.table)
+    .where(props.id, props.value)
+    .then(function (data) {
+      callback({
+        data,
+      });
+    });
+}
+
 module.exports = {
   HandelNewProducts(props, sendCallback) {
     var isMulity = false;
@@ -37,17 +49,23 @@ module.exports = {
         var productKey = CreateId();
         if (props.data.portion.length !== 1) isMulity = true;
 
-        knex("Tabs")
-          .insert({
-            id: CreateId(),
-            tabname: props.data.group.group,
-            background: props.data.group.colors.backgroundColor,
-            color: props.data.group.colors.textColor,
-            buttonType: "default",
-            isInstore: false,
-            department: props.from,
-          })
-          .then(function () {
+        GetData(
+          { table: "Tabs", id: "tabname", value: props.data.group.group },
+          knex,
+          (callback) => {
+            if (callback.data.length === 0) {
+              knex("Tabs")
+                .insert({
+                  id: CreateId(),
+                  tabname: props.data.group.group,
+                  background: props.data.group.colors.backgroundColor,
+                  color: props.data.group.colors.textColor,
+                  buttonType: "default",
+                  isInstore: false,
+                  department: props.from,
+                })
+                .then(function () {});
+            }
             knex("products")
               .insert({
                 productKey: productKey,
@@ -77,7 +95,7 @@ module.exports = {
                 sallingprice: isMulity ? 0 : props.data.portion[0].price,
                 initalPrice: isMulity ? 0 : props.data.portion[0].price,
                 qnt: 1,
-                multiplier: isMulity ? 0 : props.data.portion[0].multiplier,
+                multiplier: 0,
                 alertOut: isMulity ? 0 : props.data.portion[0].alertOut,
                 amountInstore: 0,
                 sync: false,
@@ -107,10 +125,10 @@ module.exports = {
                         department: props.from,
                       })
                       .then((result) => {
-                        console.log(result);
+                        // console.log(result);
                       })
                       .catch((err) => {
-                        console.log(err);
+                        // console.log(err);
                       });
                   });
                   return sendCallback({
@@ -128,9 +146,10 @@ module.exports = {
                   });
                 }
               });
-          });
+          }
+        );
 
-        break;
+        break; 
 
       case "getPOSList":
         switch (props.data.layoutType) {
