@@ -53,11 +53,10 @@ module.exports = {
     knex
       .select()
       .from("users")
-      .then(function (users) {
+      .then(function (user) {
         callback({
-          Error: false,
           socketId: socketId,
-          Users: { users },
+          user,
         });
       })
       .catch((err) => {

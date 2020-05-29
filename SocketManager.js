@@ -16,7 +16,7 @@ const {
   _EditDepartment,
   _UpdateUsersDepartment,
   _GetBackUp,
-  _GetSalesReports,
+  _GetSalesReports,_getAllUsers
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
@@ -169,6 +169,15 @@ module.exports = function (socket) {
     _GetDepartments(Data, (callback) => {
       // console.log(callback);
       io.to(callback.socketId).emit("DEP_RESULT", callback.data);
+    });
+  });
+
+  socket.on("USER", (data) => {
+    let Data = {
+      socketId: socket.id,
+    };
+    _getAllUsers(socket.id, (callback) => {
+      io.to(callback.socketId).emit("USER_RESULT", callback);
     });
   });
 
