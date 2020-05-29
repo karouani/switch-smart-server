@@ -54,6 +54,9 @@ module.exports = {
       .select()
       .from("users")
       .then(function (user) {
+        if (user.length === 0) {
+          _putNewUser("", (call) => {});
+        }
         callback({
           socketId: socketId,
           user,
@@ -159,46 +162,18 @@ module.exports = {
     knex
       .select()
       .from("users")
-      .where("email", user_credentials.email)
       .then(function (user) {
         if (user.length === 0) {
           let userId = CreateId();
 
           knex("users")
             .insert({
-              user_id: user_credentials.id ? user_credentials.id : userId,
-              user_name: user_credentials.name,
-              email: user_credentials.email,
-              Fname: user_credentials.name,
-              Lname: user_credentials.lname,
-              Password: user_credentials.password,
-              Profile_pic: user_credentials.withImg ? user_credentials.img : {},
-              Purchases: {},
-              NotificationId: user_credentials.notificationId,
+              user_id: userId,
+              Password: "1234",
+              NotificationId: "",
             })
-            .then(function () {
-              knex
-                .select()
-                .from("users")
-                .where(
-                  "user_id",
-                  user_credentials.id ? user_credentials.id : userId
-                )
-                .then(function (user) {
-                  callback({
-                    socketId: user_credentials.socketId,
-                    userData: { isRegistered: true, credentials: user },
-                    exists: false,
-                  });
-                });
-            });
-        } else {
-          callback({
-            socketId: user_credentials.socketId,
-            userData: {},
-            exists: true,
-          });
-        }
+            .then(function () {});
+        } 
       });
   },
 
@@ -312,7 +287,7 @@ module.exports = {
 
   _GetSalesReports(props, sendCallback) {
     console.log(props);
-     
+
     knex
       .select()
       .from("sales_reports_totals")
