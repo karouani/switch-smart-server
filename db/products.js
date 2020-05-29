@@ -43,7 +43,6 @@ module.exports = {
     switch (props.data._type) {
       case "set":
         // console.log(props);
-
         var recipe =
           props.data.recipe === "" ? props.data.group.group : props.data.recipe;
         var productKey = CreateId();
@@ -64,7 +63,18 @@ module.exports = {
                   isInstore: false,
                   department: props.from,
                 })
-                .then(function () {});
+                .then(function () {
+                  knex("all_Tabs")
+                    .insert({
+                      id: CreateId(),
+                      tabname: props.data.group.group,
+                      background: props.data.group.colors.backgroundColor,
+                      color: props.data.group.colors.textColor,
+                      buttonType: "default",
+                      isInstore: false,
+                    })
+                    .then(function () {});
+                });
             }
             knex("products")
               .insert({
@@ -105,6 +115,44 @@ module.exports = {
                 department: props.from,
               })
               .then(function () {
+                knex("all_products")
+                  .insert({
+                    productKey: productKey,
+                    group: props.data.group.group,
+                    category: recipe,
+                    ItemName: props.data.name,
+                    barcode1:
+                      props.data.portion.length !== 1
+                        ? ""
+                        : props.data.portion[0].barcode1,
+                    barcode2:
+                      props.data.portion.length !== 1
+                        ? ""
+                        : props.data.portion[0].barcode2,
+                    barcode3:
+                      props.data.portion.length !== 1
+                        ? ""
+                        : props.data.portion[0].barcode3,
+                    barcode4:
+                      props.data.portion.length !== 1
+                        ? ""
+                        : props.data.portion[0].barcode4,
+                    barcode5:
+                      props.data.portion.length !== 1
+                        ? ""
+                        : props.data.portion[0].barcode5,
+                    sallingprice: isMulity ? 0 : props.data.portion[0].price,
+                    initalPrice: isMulity ? 0 : props.data.portion[0].price,
+                    qnt: 1,
+                    multiplier: 0,
+                    alertOut: isMulity ? 0 : props.data.portion[0].alertOut,
+                    amountInstore: 0,
+                    sync: false,
+                    isInstore: false,
+                    isTaxEnabled: true,
+                    isMulity,
+                  })
+                  .then(function () {});
                 if (isMulity) {
                   props.data.portion.map((data) => {
                     knex("mulitProducts")
@@ -130,7 +178,33 @@ module.exports = {
                       .catch((err) => {
                         // console.log(err);
                       });
+
+                    props.data.portion.map((data) => {
+                      knex("all_mulitProducts")
+                        .insert({
+                          id: CreateId(),
+                          productName: props.data.name,
+                          sallingprice: parseInt(data.price),
+                          initalPrice: parseInt(data.price),
+                          qnt: 1,
+                          barcode1: data.barcode1,
+                          barcode2: data.barcode2,
+                          barcode3: data.barcode3,
+                          barcode4: data.barcode4,
+                          barcode5: data.barcode5,
+                          alertOut: parseInt(data.alertOut),
+                          amountInstore: 0,
+                          isInstore: false,
+                        })
+                        .then((result) => {
+                          // console.log(result);
+                        })
+                        .catch((err) => {
+                          // console.log(err);
+                        });
+                    });
                   });
+
                   return sendCallback({
                     from: props.from,
                     data: props.data,
@@ -149,7 +223,7 @@ module.exports = {
           }
         );
 
-        break; 
+        break;
 
       case "getPOSList":
         switch (props.data.layoutType) {
@@ -218,6 +292,41 @@ module.exports = {
                           categorylist,
                           productsList,
                           mulitList,
+                        });
+                      });
+                  });
+              });
+
+            break;
+          case "all_Products_list":
+            var alltabs = [];
+            var allcategorylist = [];
+            var allproductsList = [];
+            var allmulitList = [];
+
+            knex
+              .select()
+              .from("all_Tabs")
+              .then(function (data) {
+                alltabs = data;
+
+                knex
+                  .select()
+                  .from("all_products")
+                  .then(function (data) {
+                    allproductsList = data;
+
+                    knex
+                      .select()
+                      .from("all_mulitProducts")
+                      .then(function (data) {
+                        allmulitList = data;
+
+                        sendCallback({
+                          socketId: props.socketId,
+                          alltabs,
+                          allproductsList,
+                          allmulitList,
                         });
                       });
                   });
@@ -413,274 +522,21 @@ module.exports = {
         break;
 
       case "tranfer":
-        switch (props.state) {
-          case "send":
-            if (configureStore.getState().SocketConn.isConn) {
-              configureStore
-                .getState()
-                .SocketConn.socket.emit("SEND_TRANSTION", props);
-
-              // console.log(props);
-              GetData(
-                {
-                  table: "products",
-                  id: "ItemName",
-                  value: props.selected.ItemName,
-                },
-                knex,
-                (callback) => {
-                  knex("products")
-                    .where({ ItemName: props.selected.ItemName })
-                    .update({
-                      amountInstore:
-                        callback.data[0].amountInstore - parseInt(props.value),
-                    })
-                    .then(() => {
-                      console.log(props);
-
-                      // knex("inventory_transfer")
-                      //   .insert({
-                      //     name: props.data.selected.ItemName,
-                      //     quantity: props.data.value,
-                      //     date: moment().format("LLLL"),
-                      //     time: moment().format("LT"),
-                      //     state: "recived",
-                      //     from: props.data.from,
-                      //     to: props.data.to,
-                      //   })
-                      //   .then(function () {
-                      //     sendCallback({
-                      //       isSet: true,
-                      //     });
-                      //   });
-                    });
-                }
-              );
-            }
-
-            break;
-          case "recived":
-            // console.log(props);
-            GetData(
-              {
-                table: "Tabs",
-                id: "tabname",
-                value: props.data.selected.group,
-              },
-              knex,
-              (callback) => {
-                if (callback.data.length === 0) {
-                  knex("Tabs")
-                    .insert({
-                      id: CreateId(),
-                      tabname: props.data.selected.group,
-                      background: "#3b3b3b",
-                      color: "#fff",
-                      buttonType: "default",
-                      isInstore: true,
-                    })
-                    .then((result) => {
-                      knex("products")
-                        .insert({
-                          productKey: props.data.selected.productKey,
-                          group: props.data.selected.group,
-                          category: props.data.selected.category,
-                          ItemName: props.data.selected.ItemName,
-                          barcode1: props.data.selected.barcode1,
-                          barcode2: props.data.selected.barcode2,
-                          barcode3: props.data.selected.barcode3,
-                          barcode4: props.data.selected.barcode4,
-                          barcode5: props.data.selected.barcode5,
-                          sallingprice: props.data.selected.sallingprice,
-                          initalPrice: props.data.selected.initalPrice,
-                          qnt: props.data.selected.qnt,
-                          multiplier: props.data.selected.multiplier,
-                          alertOut: props.data.selected.alertOut,
-                          amountInstore: parseInt(props.data.value),
-                          sync: props.data.selected.sync,
-                          isInstore: true,
-                          isTaxEnabled: props.data.selected.isTaxEnabled,
-                          isMulity: props.data.selected.isMulity,
-                        })
-                        .then(function () {
-                          if (props.data.selected.isMulity) {
-                            props.data.data.multi.data.map((data) => {
-                              knex("mulitProducts")
-                                .insert({
-                                  id: data.id,
-                                  productName: data.productName,
-                                  sallingprice: data.sallingprice,
-                                  initalPrice: data.initalPrice,
-                                  qnt: data.qnt,
-                                  barcode1: data.barcode1,
-                                  barcode2: data.barcode2,
-                                  barcode3: data.barcode3,
-                                  barcode4: data.barcode4,
-                                  barcode5: data.barcode5,
-                                  alertOut: data.alertOut,
-                                  amountInstore: parseInt(props.data.value),
-                                  isInstore: true,
-                                })
-                                .then((result) => {
-                                  knex("inventory_transfer")
-                                    .insert({
-                                      name: props.data.selected.ItemName,
-                                      quantity: props.data.value,
-                                      date: moment().format("LLLL"),
-                                      time: moment().format("LT"),
-                                      state: "recived",
-                                      isCleared: true,
-                                      department: props.data.from,
-                                    })
-                                    .then(function () {
-                                      sendCallback({
-                                        isSet: true,
-                                      });
-                                    });
-                                });
-                            });
-                          } else {
-                            knex("inventory_transfer")
-                              .insert({
-                                name: props.data.selected.ItemName,
-                                quantity: props.data.value,
-                                date: moment().format("LLLL"),
-                                time: moment().format("LT"),
-                                state: "recived",
-                                from: props.data.from,
-                                to: props.data.to,
-                              })
-                              .then(function () {
-                                sendCallback({
-                                  isSet: true,
-                                });
-                              });
-                          }
-                        });
-                    });
-                } else {
-                  GetData(
-                    {
-                      table: "products",
-                      id: "ItemName",
-                      value: props.data.selected.ItemName,
-                    },
-                    knex,
-                    (callback) => {
-                      console.log(callback);
-                      if (callback.data.length !== 0) {
-                        knex("products")
-                          .where({ ItemName: props.data.selected.ItemName })
-                          .update({
-                            amountInstore:
-                              callback.data[0].amountInstore +
-                              parseInt(props.data.value),
-                            sync: true,
-                            isInstore: true,
-                          })
-                          .then(function () {
-                            knex("inventory_transfer")
-                              .insert({
-                                name: props.data.selected.ItemName,
-                                quantity: props.data.value,
-                                date: moment().format("LLLL"),
-                                time: moment().format("LT"),
-                                state: "recived",
-                                isCleared: true,
-                                department: props.data.from,
-                              })
-                              .then(function () {
-                                sendCallback({
-                                  isSet: true,
-                                });
-                              });
-                          });
-                      } else {
-                        knex("products")
-                          .insert({
-                            productKey: props.data.selected.productKey,
-                            group: props.data.selected.group,
-                            category: props.data.selected.category,
-                            ItemName: props.data.selected.ItemName,
-                            barcode1: props.data.selected.barcode1,
-                            barcode2: props.data.selected.barcode2,
-                            barcode3: props.data.selected.barcode3,
-                            barcode4: props.data.selected.barcode4,
-                            barcode5: props.data.selected.barcode5,
-                            sallingprice: props.data.selected.sallingprice,
-                            initalPrice: props.data.selected.initalPrice,
-                            qnt: props.data.selected.qnt,
-                            multiplier: props.data.selected.multiplier,
-                            alertOut: props.data.selected.alertOut,
-                            amountInstore: parseInt(props.data.value),
-                            sync: props.data.selected.sync,
-                            isInstore: true,
-                            isTaxEnabled: props.data.selected.isTaxEnabled,
-                            isMulity: props.data.selected.isMulity,
-                          })
-                          .then(function () {
-                            if (props.data.selected.isMulity) {
-                              props.data.data.multi.data.map((data) => {
-                                knex("mulitProducts")
-                                  .insert({
-                                    id: data.id,
-                                    productName: data.productName,
-                                    sallingprice: data.sallingprice,
-                                    initalPrice: data.initalPrice,
-                                    qnt: data.qnt,
-                                    barcode1: data.barcode1,
-                                    barcode2: data.barcode2,
-                                    barcode3: data.barcode3,
-                                    barcode4: data.barcode4,
-                                    barcode5: data.barcode5,
-                                    alertOut: data.alertOut,
-                                    amountInstore: parseInt(props.data.value),
-                                    isInstore: true,
-                                  })
-                                  .then((result) => {
-                                    knex("inventory_transfer")
-                                      .insert({
-                                        name: props.data.selected.ItemName,
-                                        quantity: props.data.value,
-                                        date: moment().format("LLLL"),
-                                        time: moment().format("LT"),
-                                        state: "recived",
-                                        isCleared: true,
-                                        department: props.data.from,
-                                      })
-                                      .then(function () {
-                                        sendCallback({
-                                          isSet: true,
-                                        });
-                                      });
-                                  });
-                              });
-                            } else {
-                              knex("inventory_transfer")
-                                .insert({
-                                  name: props.data.selected.ItemName,
-                                  quantity: props.data.value,
-                                  date: moment().format("LLLL"),
-                                  time: moment().format("LT"),
-                                  state: "recived",
-                                  isCleared: true,
-                                  department: props.data.from,
-                                })
-                                .then(function () {
-                                  sendCallback({
-                                    isSet: true,
-                                  });
-                                });
-                            }
-                          });
-                      }
-                    }
-                  );
-                }
-              }
-            );
-            break;
-        }
+        knex("inventory_transfer")
+          .insert({
+            name: props.data.selected.ItemName,
+            quantity: props.data.value,
+            date: moment().format("LLLL"),
+            time: moment().format("LT"),
+            from: props.data.from,
+            to: props.data.to,
+          })
+          .then(function () {
+            sendCallback({
+              name: props.data.selected.ItemName,
+              isSet: true,
+            });
+          });
 
         break;
       default:

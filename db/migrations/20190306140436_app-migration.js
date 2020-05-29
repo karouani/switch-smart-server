@@ -20,6 +20,17 @@ exports.up = function (knex, Promise) {
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
+    .createTable("all_Tabs", function (table) {
+      table.increments("key");
+      table.string("id").notNullable();
+      table.string("tabname").notNullable();
+      table.string("background").notNullable();
+      table.string("color").notNullable();
+      table.string("buttonType").notNullable();
+      table.boolean("isInstore").notNullable();
+      table.timestamp("date").defaultTo(knex.fn.now());
+      table.timestamp("modified").defaultTo(knex.fn.now());
+    })
     .createTable("products", function (table) {
       table.increments("key");
       table.string("productKey").notNullable();
@@ -45,6 +56,30 @@ exports.up = function (knex, Promise) {
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
+    .createTable("all_products", function (table) {
+      table.increments("key");
+      table.string("productKey").notNullable();
+      table.string("group").notNullable();
+      table.string("category").notNullable();
+      table.string("ItemName").notNullable();
+      table.string("barcode1").notNullable();
+      table.string("barcode2").notNullable();
+      table.string("barcode3").notNullable();
+      table.string("barcode4").notNullable();
+      table.string("barcode5").notNullable();
+      table.integer("sallingprice").notNullable();
+      table.integer("initalPrice").notNullable();
+      table.integer("qnt").notNullable();
+      table.integer("multiplier").notNullable();
+      table.integer("alertOut").notNullable();
+      table.integer("amountInstore").notNullable();
+      table.boolean("sync").notNullable();
+      table.boolean("isInstore").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
+      table.boolean("isMulity").notNullable();
+      table.timestamp("date").defaultTo(knex.fn.now());
+      table.timestamp("modified").defaultTo(knex.fn.now());
+    })
     .createTable("mulitProducts", function (table) {
       table.increments("key");
       table.string("id").notNullable();
@@ -61,6 +96,24 @@ exports.up = function (knex, Promise) {
       table.integer("amountInstore").notNullable();
       table.boolean("isInstore").notNullable();
       table.string("department").notNullable();
+      table.timestamp("date").defaultTo(knex.fn.now());
+      table.timestamp("modified").defaultTo(knex.fn.now());
+    })
+    .createTable("all_mulitProducts", function (table) {
+      table.increments("key");
+      table.string("id").notNullable();
+      table.string("productName").notNullable();
+      table.integer("sallingprice").notNullable();
+      table.integer("initalPrice").notNullable();
+      table.integer("qnt").notNullable();
+      table.string("barcode1").notNullable();
+      table.string("barcode2").notNullable();
+      table.string("barcode3").notNullable();
+      table.string("barcode4").notNullable();
+      table.string("barcode5").notNullable();
+      table.integer("alertOut").notNullable();
+      table.integer("amountInstore").notNullable();
+      table.boolean("isInstore").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -110,6 +163,17 @@ exports.up = function (knex, Promise) {
       table.timestamp("timestamp").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
+    .createTable("inventory_transfer", function (table) {
+      table.increments("key");
+      table.string("name").notNullable();
+      table.string("quantity").notNullable(); 
+      table.string("date").notNullable();
+      table.string("time").notNullable();
+      table.string("from").notNullable();
+      table.string("to").notNullable();
+      table.timestamp("timestamp").defaultTo(knex.fn.now());
+      table.timestamp("modified").defaultTo(knex.fn.now());
+    })
     .createTable("sales_reports_totals", function (table) {
       table.increments("key");
       table.string("id").notNullable();
@@ -153,8 +217,11 @@ exports.down = function (knex, Promise) {
   return knex.schema
     .dropTable("users")
     .dropTable("Tabs")
+    .dropTable("all_Tabs")
     .dropTable("products")
+    .dropTable("all_products")
     .dropTable("mulitProducts")
+    .dropTable("all_mulitProducts")
     .dropTable("inventory")
     .dropTable("departments_config")
     .dropTable("sales_reports_tikets")

@@ -15,7 +15,8 @@ const {
   _SetDepartment,
   _EditDepartment,
   _UpdateUsersDepartment,
-  _GetBackUp,_GetSalesReports,
+  _GetBackUp,
+  _GetSalesReports,
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
@@ -53,6 +54,24 @@ require("custom-env").env();
 //     }
 //   });
 // });
+
+function sendDeliveryNote(data) {
+  data.connectedUsers.map((list) => {
+    if (data.props.from === list.data.dep_name) {
+      io.to(list.socketId).emit("DELIVERY_NOTIFICATION", data.props);
+
+      var datalist = {
+        _type: "tranfer",
+        value: data.props.value,
+        selected: data.props.selected,
+        isCleared: true,
+        data: data.props,
+      };
+
+      HandelNewProducts(datalist, (callback) => {});
+    }
+  });
+}
 
 var connectedUsers = [];
 
@@ -94,21 +113,22 @@ module.exports = function (socket) {
   });
 
   socket.on("SEND_TRANSTION", (props) => {
-    // console.log(connectedUsers);
     connectedUsers.map((list) => {
       if (props.to === list.data.dep_name) {
-        // console.log(list.socketId);
         io.to(list.socketId).emit("TRANSFER_NOTIFICATION", props);
+        sendDeliveryNote({ connectedUsers, props });
       }
     });
   });
+
   socket.on("GETPRODUCTES", (props) => {
     var data = {
       socketId: socket.id,
     };
     connectedUsers.map((list) => {
+      console.log(props);
+
       if (props.to === list.data.dep_name) {
-        // console.log(list.socketId);
         io.to(list.socketId).emit("TRANSFER_NOTIFICATION", props);
       }
     });
@@ -212,7 +232,6 @@ module.exports = function (socket) {
       socketId: socket.id,
     };
 
-    // console.log(Data);
     _GetSalesReports(Data, (revicedCallback) => {
       io.to(revicedCallback.socketId).emit(
         "SALESREPORTSALET",
@@ -226,9 +245,19 @@ module.exports = function (socket) {
       io.emit("UPDATEPRODUSTS", callback);
     });
   });
-  
+
+  socket.on("GETALLPRODUCTS", () => {
+    var data = {
+      data: { layoutType: "all_Products_list", _type: "getPOSList" },
+      socketId: socket.id,
+    };
+
+    HandelNewProducts(data, (callback) => {
+      io.to(callback.socketId).emit("ALLPRODUCTSLIST", callback);
+    });
+  });
+
   socket.on("UPDATEINVENTORTY", (data) => {
-    console.log(data);
     HandelNewProducts(data, (callback) => {
       // console.log(callback);
       // io.emit("UPDATEINVENTORTY", callback);

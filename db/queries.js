@@ -312,6 +312,8 @@ module.exports = {
   },
 
   _GetSalesReports(props, sendCallback) {
+    console.log(props);
+     
     knex
       .select()
       .from("sales_reports_totals")
