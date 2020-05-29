@@ -55,7 +55,13 @@ module.exports = {
       .from("users")
       .then(function (user) {
         if (user.length === 0) {
-          _putNewUser("", (call) => {});
+          knex("users")
+            .insert({
+              user_id: CreateId(),
+              Password: "1234",
+              NotificationId: "",
+            })
+            .then(function () {});
         }
         callback({
           socketId: socketId,
@@ -173,7 +179,7 @@ module.exports = {
               NotificationId: "",
             })
             .then(function () {});
-        } 
+        }
       });
   },
 
