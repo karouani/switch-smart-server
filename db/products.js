@@ -1,27 +1,10 @@
 const knex = require("../knex"); // the connection!
 const uuidv4 = require("uuid/v4");
-
-const path = require("path");
 const moment = require("moment");
-const low = require("lowdb");
-const FileAsync = require("lowdb/adapters/FileAsync");
 
-// let defaultPath = getDatafilePath;
-// const ConfigPath = defaultPath + "/dataFiles/Products/config.json";
-// const FolderPath = defaultPath + "/dataFiles/Products/";
-
-var ConfigPath = path.join(__dirname, "config.json");
-
-const ConfigAdapter = new FileAsync("products.json");
 function CreateId() {
   return uuidv4();
 }
-
-var check = moment(new Date());
-var day = check.format("dddd"); // => ('Monday' , 'Tuesday' ----)
-var month = check.format("MMMM"); // => ('January','February.....)
-var year = check.format("YYYY");
-var time = check.format("LT");
 
 function GetData(props, hook, callback) {
   hook
@@ -300,7 +283,6 @@ module.exports = {
             break;
           case "all_Products_list":
             var alltabs = [];
-            var allcategorylist = [];
             var allproductsList = [];
             var allmulitList = [];
 
@@ -427,8 +409,6 @@ module.exports = {
 
         break;
       case "delete":
-        // console.log(props);
-
         knex("products")
           .where({ productKey: props.data.selected.productKey })
           .del()

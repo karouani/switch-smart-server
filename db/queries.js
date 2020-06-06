@@ -72,6 +72,7 @@ module.exports = {
         callback({ Error: true, msg: err });
       });
   },
+  
   _getUser_ById(user_credentials, callback) {
     knex
       .select()
@@ -133,8 +134,7 @@ module.exports = {
   },
 
   _putNewProudct(data, callback) {
-    // let productId = CreateId();
-
+    // let 
     knex(data.data.pdf_type)
       .insert({
         id: data.data.pdf_id,
@@ -335,7 +335,7 @@ module.exports = {
             .insert({
               id: CreateId(),
               dep_name: props.Userdata.department,
-              theme: "light",
+              theme: "dark",
               phone: props.Userdata.phone,
               shopNo: props.Userdata.shopNo,
               road: props.Userdata.road,

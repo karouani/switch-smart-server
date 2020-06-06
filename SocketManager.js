@@ -263,10 +263,10 @@ module.exports = function (socket) {
 
     HandelNewProducts(data, (callback) => {
       io.to(callback.socketId).emit("ALLPRODUCTSLIST", callback);
-    });
+    }); 
   });
 
-  socket.on("UPDATEINVENTORTY", (data) => {
+  socket.on("UPDATEINVENTORTY", (data) => { 
     HandelNewProducts(data, (callback) => {
       // console.log(callback);
       // io.emit("UPDATEINVENTORTY", callback);

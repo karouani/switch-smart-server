@@ -151,11 +151,15 @@ exports.up = function (knex, Promise) {
       table.integer("ChangeDue").notNullable();
       table.integer("Balance").notNullable();
       table.integer("Discount").notNullable();
+      table.integer("RtxGrandTotal").notNullable();
+      table.integer("RtxAmountPaid").notNullable();
+      table.integer("RtxChangeDue").notNullable(); 
+      table.integer("RtxBalance").notNullable();
       table.string("Date").notNullable();
       table.string("Department").notNullable();
       table.string("User").notNullable();
       table.string("PaymentType").notNullable();
-      table.boolean("isTaxInvoice").notNullable();
+      table.boolean("isTaxInvoice").notNullable(); 
       table.text("Note").notNullable();
       table.decimal("totalTaxFinal").notNullable();
       table.decimal("totalTax").notNullable();
@@ -166,7 +170,7 @@ exports.up = function (knex, Promise) {
     .createTable("inventory_transfer", function (table) {
       table.increments("key");
       table.string("name").notNullable();
-      table.string("quantity").notNullable(); 
+      table.string("quantity").notNullable();
       table.string("date").notNullable();
       table.string("time").notNullable();
       table.string("from").notNullable();
@@ -186,7 +190,12 @@ exports.up = function (knex, Promise) {
       table.integer("ChangeDue").notNullable();
       table.integer("Balance").notNullable();
       table.integer("Discount").notNullable();
+      table.integer("RtxGrandTotal").notNullable();
+      table.integer("RtxAmountPaid").notNullable();
+      table.integer("RtxChangeDue").notNullable();
+      table.integer("RtxBalance").notNullable();
       table.string("Date").notNullable();
+      table.string("Datetrack").notNullable();
       table.string("Department").notNullable();
       table.decimal("totalTaxFinal").notNullable();
       table.decimal("totalTax").notNullable();
