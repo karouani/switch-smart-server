@@ -16,7 +16,9 @@ const {
   _EditDepartment,
   _UpdateUsersDepartment,
   _GetBackUp,
-  _GetSalesReports,_getAllUsers
+  _GetSalesReports,
+  _getAllUsers,
+  _GetAllSalesReports,
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
@@ -176,6 +178,8 @@ module.exports = function (socket) {
     let Data = {
       socketId: socket.id,
     };
+    // console.log('test');
+
     _getAllUsers(socket.id, (callback) => {
       io.to(callback.socketId).emit("USER_RESULT", callback);
     });
@@ -249,6 +253,19 @@ module.exports = function (socket) {
     });
   });
 
+  socket.on("GETALLSALESREPORT", (data) => {
+    let Data = {
+      socketId: socket.id,
+    };
+
+    _GetAllSalesReports(Data, (revicedCallback) => {
+      io.to(revicedCallback.socketId).emit(
+        "SALESREPORTSALETALL",
+        revicedCallback.data
+      );
+    });
+  });
+
   socket.on("UPDATENEWPROUDCT", (data) => {
     HandelNewProducts(data, (callback) => {
       io.emit("UPDATEPRODUSTS", callback);
@@ -263,10 +280,10 @@ module.exports = function (socket) {
 
     HandelNewProducts(data, (callback) => {
       io.to(callback.socketId).emit("ALLPRODUCTSLIST", callback);
-    }); 
+    });
   });
 
-  socket.on("UPDATEINVENTORTY", (data) => { 
+  socket.on("UPDATEINVENTORTY", (data) => {
     HandelNewProducts(data, (callback) => {
       // console.log(callback);
       // io.emit("UPDATEINVENTORTY", callback);

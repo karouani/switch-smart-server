@@ -72,7 +72,7 @@ module.exports = {
         callback({ Error: true, msg: err });
       });
   },
-  
+
   _getUser_ById(user_credentials, callback) {
     knex
       .select()
@@ -134,7 +134,7 @@ module.exports = {
   },
 
   _putNewProudct(data, callback) {
-    // let 
+    // let
     knex(data.data.pdf_type)
       .insert({
         id: data.data.pdf_id,
@@ -292,13 +292,26 @@ module.exports = {
   },
 
   _GetSalesReports(props, sendCallback) {
-    console.log(props);
+    // console.log(props);
 
     knex
       .select()
       .from("sales_reports_totals")
       .where({ Department: props.Userdata.data })
       .andWhere({ [props.Userdata.dateType]: props.Userdata.date })
+      .then(function (data) {
+        sendCallback({
+          socketId: props.socketId,
+          data,
+        });
+      });
+  },
+
+  _GetAllSalesReports(props, sendCallback) {
+
+    knex
+      .select()
+      .from("sales_reports_totals")
       .then(function (data) {
         sendCallback({
           socketId: props.socketId,
