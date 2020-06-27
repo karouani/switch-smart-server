@@ -234,6 +234,7 @@ module.exports = function (socket) {
 
     _SalesReports(Data, (callback) => {
       io.to(callback.socketId).emit("SALESREPORTLIST", callback.productData);
+      io.emit("SALESREPORTLIST", callback.productData);
     });
   });
 
