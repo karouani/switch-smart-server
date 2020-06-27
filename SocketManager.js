@@ -24,9 +24,7 @@ const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
 const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
 
-
 require("custom-env").env();
-// require("./db/db_4")
 
 // var count = 0;
 
