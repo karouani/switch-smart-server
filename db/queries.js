@@ -1,10 +1,38 @@
 const knex = require("../knex"); // the connection!
 
-const uuidv4 = require("uuid/v4");
+const uuidv4 = require("uuid/v1");
 const { HandelNewProducts } = require("./products");
 
 function CreateId() {
   return uuidv4();
+}
+
+function _setDataBaseList(sendCallback) {
+  let loop = 0;
+  [("database_1", "database_2", "database_3", "database_4")].map(function (
+    list
+  ) {
+    loop++;
+
+    knex("databass")
+      .insert({
+        dbName: list,
+        isAverabel: true,
+      })
+      .then(function () {
+        sendCallback(loop);
+      });
+  });
+}
+
+function getDatabase(sendCallback) {
+  knex
+    .select()
+    .from("databass")
+    .where({ isAverabel: false })
+    .then(function (data) {
+      sendCallback(data);
+    });
 }
 
 function _Getdata(table, type, sendCallback) {
@@ -427,35 +455,114 @@ module.exports = {
             data: { alreadyExist: true },
           });
         else {
-          knex("departments_config")
-            .insert({
-              id: CreateId(),
-              dep_name: props.Userdata.department,
-              theme: "dark",
-              phone: props.Userdata.phone,
-              shopNo: props.Userdata.shopNo,
-              road: props.Userdata.road,
-              state: props.Userdata.state,
-              country: props.Userdata.country,
-              tpin: props.Userdata.tpin,
-              taxType: props.Userdata.taxType,
-              taxRat: props.Userdata.taxRat,
-              date: props.Userdata.date,
-              user: props.Userdata.user,
-              notifications: { notificationId: CreateId(), list: [] },
-            })
-            .then(function () {
+          getDatabase((isAverabel) => {
+            if (isAverabel.length === 0) {
+              _setDataBaseList((recivecallback) => {
+                if (recivecallback === 4) {
+                  knex("departments_config")
+                    .insert({
+                      id: CreateId(),
+                      dep_name: props.Userdata.department,
+                      db_name: "database_1",
+                      theme: "dark",
+                      phone: props.Userdata.phone,
+                      shopNo: props.Userdata.shopNo,
+                      road: props.Userdata.road,
+                      state: props.Userdata.state,
+                      country: props.Userdata.country,
+                      tpin: props.Userdata.tpin,
+                      taxType: props.Userdata.taxType,
+                      taxRat: props.Userdata.taxRat,
+                      date: props.Userdata.date,
+                      user: props.Userdata.user,
+                      notifications: { notificationId: CreateId(), list: [] },
+                    })
+                    .then(function () {
+                      knex
+                        .select()
+                        .from("departments_config")
+                        .where("dep_name", props.Userdata.department)
+                        .then(function (departments) {
+                          knex("databass")
+                            .where({ dbName: "database_1" })
+                            .update({
+                              isAverabel: false,
+                            })
+                            .then(function () {
+                              sendCallback({
+                                socketId: props.socketId,
+                                data: {
+                                  alreadyExist: false,
+                                  departments,
+                                  dblimited: false,
+                                },
+                              });
+                            });
+                        });
+                    });
+                }
+              });
+            } else {
               knex
                 .select()
-                .from("departments_config")
-                .where("dep_name", props.Userdata.department)
-                .then(function (departments) {
-                  sendCallback({
-                    socketId: props.socketId,
-                    data: { alreadyExist: false, departments },
-                  });
+                .from("databass")
+                .where("isAverabel", false)
+                .then(function (dbs) {
+                  if (dbs.length !== 0) {
+                    knex("departments_config")
+                      .insert({
+                        id: CreateId(),
+                        dep_name: props.Userdata.department,
+                        db_name: dbs[0].dbName,
+                        theme: "dark",
+                        phone: props.Userdata.phone,
+                        shopNo: props.Userdata.shopNo,
+                        road: props.Userdata.road,
+                        state: props.Userdata.state,
+                        country: props.Userdata.country,
+                        tpin: props.Userdata.tpin,
+                        taxType: props.Userdata.taxType,
+                        taxRat: props.Userdata.taxRat,
+                        date: props.Userdata.date,
+                        user: props.Userdata.user,
+                        notifications: { notificationId: CreateId(), list: [] },
+                      })
+                      .then(function () {
+                        knex
+                          .select()
+                          .from("departments_config")
+                          .where("dep_name", props.Userdata.department)
+                          .then(function (departments) {
+                            knex("databass")
+                              .where({ dbName: dbs[0].dbName })
+                              .update({
+                                isAverabel: false,
+                              })
+                              .then(function () {
+                                sendCallback({
+                                  socketId: props.socketId,
+                                  data: {
+                                    alreadyExist: false,
+                                    departments,
+                                    dblimited: false,
+                                  },
+                                });
+                              });
+                          });
+                      });
+                  } else {
+                    sendCallback({
+                      socketId: props.socketId,
+                      data: {
+                        alreadyExist: false,
+                        departments,
+                        dblimited: true,
+                      },
+                    });
+                  }
                 });
-            });
+            }
+          });
         }
       }
     );
