@@ -1,8 +1,8 @@
-const connection_1 = require("../connection1"); //  connection 1
+const connection_2 = require("../connection2"); //  connection 1
 
-connection_1.schema.hasTable("products").then(function (exists) {
+connection_2.schema.hasTable("products").then(function (exists) {
   if (!exists) {
-    return connection_1.schema
+    return connection_2.schema
       .createTable("Tabs", function (table) {
         table.increments("key");
         table.string("id").notNullable();
@@ -12,8 +12,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.string("buttonType").notNullable();
         table.boolean("isInstore").notNullable();
         table.string("department").notNullable();
-        table.timestamp("date").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("date").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("products", function (table) {
         table.increments("key");
@@ -37,8 +37,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.boolean("isTaxEnabled").notNullable();
         table.boolean("isMulity").notNullable();
         table.string("department").notNullable();
-        table.timestamp("date").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("date").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("mulitProducts", function (table) {
         table.increments("key");
@@ -56,8 +56,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.integer("amountInstore").notNullable();
         table.boolean("isInstore").notNullable();
         table.string("department").notNullable();
-        table.timestamp("date").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("date").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("inventory", function (table) {
         table.increments("key");
@@ -76,8 +76,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.boolean("isInstore").notNullable();
         table.boolean("isTaxEnabled").notNullable();
         table.boolean("isMulity").notNullable();
-        table.timestamp("date").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("date").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("sales_reports_tikets", function (table) {
         table.increments("key");
@@ -106,8 +106,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.decimal("totalTaxFinal").notNullable();
         table.decimal("totalTax").notNullable();
         table.string("time").notNullable();
-        table.timestamp("timestamp").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("timestamp").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("inventory_transfer", function (table) {
         table.increments("key");
@@ -117,8 +117,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.string("time").notNullable();
         table.string("from").notNullable();
         table.string("to").notNullable();
-        table.timestamp("timestamp").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("timestamp").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       })
       .createTable("sales_reports_totals", function (table) {
         table.increments("key");
@@ -142,8 +142,8 @@ connection_1.schema.hasTable("products").then(function (exists) {
         table.decimal("totalTaxFinal").notNullable();
         table.decimal("totalTax").notNullable();
         table.string("time").notNullable();
-        table.timestamp("timestamp").defaultTo(connection_1.fn.now());
-        table.timestamp("modified").defaultTo(connection_1.fn.now());
+        table.timestamp("timestamp").defaultTo(connection_2.fn.now());
+        table.timestamp("modified").defaultTo(connection_2.fn.now());
       });
   }
 });

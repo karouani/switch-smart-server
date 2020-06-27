@@ -9,7 +9,7 @@ module.exports = {
       host: process.env.DB_1_HOST,
       port:  process.env.DB_1_PORT,
       database: process.env.DB_1_NAME,
-      ssl: false
+      ssl: true
     },
     migrations: {
       directory: __dirname + '/db/1/migrations',
