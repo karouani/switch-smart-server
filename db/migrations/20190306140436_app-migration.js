@@ -183,12 +183,12 @@ exports.up = function (knex, Promise) {
       table.string("id").notNullable();
       table.string("Year").notNullable();
       table.string("Day").notNullable();
-      table.string("Month").notNullable();
+      table.string("Month").notNullable(); 
       table.integer("SrNo").notNullable();
       table.integer("GrandTotal").notNullable();
       table.integer("AmountPaid").notNullable();
       table.integer("ChangeDue").notNullable();
-      table.integer("Balance").notNullable();
+      table.integer("Balance").notNullable(); 
       table.integer("Discount").notNullable();
       table.integer("RtxGrandTotal").notNullable();
       table.integer("RtxAmountPaid").notNullable();
@@ -232,6 +232,7 @@ exports.down = function (knex, Promise) {
     .dropTable("mulitProducts")
     .dropTable("all_mulitProducts")
     .dropTable("inventory")
+    .dropTable("inventory_transfer")
     .dropTable("departments_config")
     .dropTable("sales_reports_tikets")
     .dropTable("sales_reports_totals");

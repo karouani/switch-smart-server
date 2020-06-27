@@ -79,7 +79,7 @@ var connectedUsers = [];
 
 module.exports = function (socket) {
   socket.on("connected", () => {
-    console.log(socket.id);
+    // console.log(socket.id);  
   });
 
   socket.on("UserConnected", (props) => {
@@ -128,8 +128,6 @@ module.exports = function (socket) {
       socketId: socket.id,
     };
     connectedUsers.map((list) => {
-      console.log(props);
-
       if (props.to === list.data.dep_name) {
         io.to(list.socketId).emit("TRANSFER_NOTIFICATION", props);
       }
@@ -246,6 +244,7 @@ module.exports = function (socket) {
     };
 
     _GetSalesReports(Data, (revicedCallback) => {
+      // console.log(revicedCallback.data);
       io.to(revicedCallback.socketId).emit(
         "SALESREPORTSALET",
         revicedCallback.data
