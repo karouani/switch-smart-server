@@ -231,10 +231,10 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
+// console.log('SALESREPORT');
 
     _SalesReports(Data, (callback) => {
-      io.to(callback.socketId).emit("SALESREPORTLIST", callback.productData);
-      io.emit("SALESREPORTLIST", callback.productData);
+      io.emit("SALESREPORTLIST", callback);
     });
   });
 

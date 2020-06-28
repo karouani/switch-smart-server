@@ -186,181 +186,226 @@ module.exports = {
   _SalesReports(props, sendCallback) {
     knex("sales_reports_tikets")
       .insert({
-        id:  props.Userdata.data.id,
-        Year:  props.Userdata.data.year,
-        Day:  props.Userdata.data.day,
-        Month:  props.Userdata.data.month,
-        InvoiceNumber:  props.Userdata.data.invoiceNumber,
-        TicketList: JSON.stringify({ list:  props.Userdata.data.ticketList }),
-        Customer: JSON.stringify( props.Userdata.data.Customer),
-        GrandTotal:  props.Userdata.data.GrandTotal,
-        AmountPaid:  props.Userdata.data.AmountPaid,
-        ChangeDue:  props.Userdata.data.ChangeDue,
-        Balance:  props.Userdata.data.Balance,
+        id: props.Userdata.data.id,
+        Year: props.Userdata.data.year,
+        Day: props.Userdata.data.day,
+        Month: props.Userdata.data.month,
+        InvoiceNumber: props.Userdata.data.invoiceNumber,
+        TicketList: JSON.stringify({ list: props.Userdata.data.ticketList }),
+        Customer: JSON.stringify(props.Userdata.data.Customer),
+        GrandTotal: props.Userdata.data.GrandTotal,
+        AmountPaid: props.Userdata.data.AmountPaid,
+        ChangeDue: props.Userdata.data.ChangeDue,
+        Balance: props.Userdata.data.Balance,
         RtxGrandTotal: props.isTaxInvoice
-          ?  props.Userdata.data.GrandTotal
+          ? props.Userdata.data.GrandTotal
           : props.paymentType === "Credit Card"
-          ?  props.Userdata.data.GrandTotal
-          :  props.Userdata.data.RtxGrandTotal,
+          ? props.Userdata.data.GrandTotal
+          : props.Userdata.data.RtxGrandTotal,
         RtxAmountPaid: props.isTaxInvoice
-          ?  props.Userdata.data.AmountPaid
+          ? props.Userdata.data.AmountPaid
           : props.paymentType === "Credit Card"
-          ?  props.Userdata.data.AmountPaid
-          :  props.Userdata.data.RtxAmountPaid,
+          ? props.Userdata.data.AmountPaid
+          : props.Userdata.data.RtxAmountPaid,
         RtxChangeDue: props.isTaxInvoice
-          ?  props.Userdata.data.ChangeDue
+          ? props.Userdata.data.ChangeDue
           : props.paymentType === "Credit Card"
-          ?  props.Userdata.data.ChangeDue
-          :  props.Userdata.data.RtxChangeDue,
+          ? props.Userdata.data.ChangeDue
+          : props.Userdata.data.RtxChangeDue,
         RtxBalance: props.isTaxInvoice
-          ?  props.Userdata.data.Balance
+          ? props.Userdata.data.Balance
           : props.paymentType === "Credit Card"
-          ?  props.Userdata.data.Balance
-          :  props.Userdata.data.RtxBalance,
-        Discount:  props.Userdata.data.Discount,
-        Date:  props.Userdata.data.Date,
-        Department:  props.Userdata.data.department,
-        User:  props.Userdata.data.user,
-        PaymentType:  props.Userdata.data.paymentType,
-        isTaxInvoice:  props.Userdata.data.isTaxInvoice,
-        Note:  props.Userdata.data.note,
-        totalTaxFinal:  props.Userdata.data.totalTaxFinal,
-        totalTax:  props.Userdata.data.totalTax,
-        time:  props.Userdata.data.time,
+          ? props.Userdata.data.Balance
+          : props.Userdata.data.RtxBalance,
+        Discount: props.Userdata.data.Discount,
+        Date: props.Userdata.data.Date,
+        Department: props.Userdata.data.department,
+        User: props.Userdata.data.user,
+        PaymentType: props.Userdata.data.paymentType,
+        isTaxInvoice: props.Userdata.data.isTaxInvoice,
+        Note: props.Userdata.data.note,
+        totalTaxFinal: props.Userdata.data.totalTaxFinal,
+        totalTax: props.Userdata.data.totalTax,
+        time: props.Userdata.data.time,
       })
       .then(function () {
         knex
           .select()
           .from("sales_reports_totals")
-          .where("Department",  props.Userdata.data.department)
+          .where("Department", props.Userdata.data.department)
           .then(function (MainData) {
             if (MainData.length === 0) {
               knex("sales_reports_totals")
                 .insert({
-                  id:  props.Userdata.data.id,
-                  Year:  props.Userdata.data.year,
-                  Day:  props.Userdata.data.day,
-                  Month:  props.Userdata.data.month,
+                  id: props.Userdata.data.id,
+                  Year: props.Userdata.data.year,
+                  Day: props.Userdata.data.day,
+                  Month: props.Userdata.data.month,
                   SrNo: 1,
-                  GrandTotal:  props.Userdata.data.GrandTotal,
-                  AmountPaid:  props.Userdata.data.AmountPaid,
-                  ChangeDue:  props.Userdata.data.ChangeDue,
-                  Balance:  props.Userdata.data.Balance,
+                  GrandTotal: props.Userdata.data.GrandTotal,
+                  AmountPaid: props.Userdata.data.AmountPaid,
+                  ChangeDue: props.Userdata.data.ChangeDue,
+                  Balance: props.Userdata.data.Balance,
                   RtxGrandTotal: props.isTaxInvoice
-                    ?  props.Userdata.data.GrandTotal
+                    ? props.Userdata.data.GrandTotal
                     : props.paymentType === "Credit Card"
-                    ?  props.Userdata.data.GrandTotal
-                    :  props.Userdata.data.RtxGrandTotal,
+                    ? props.Userdata.data.GrandTotal
+                    : props.Userdata.data.RtxGrandTotal,
                   RtxAmountPaid: props.isTaxInvoice
-                    ?  props.Userdata.data.AmountPaid
+                    ? props.Userdata.data.AmountPaid
                     : props.paymentType === "Credit Card"
-                    ?  props.Userdata.data.AmountPaid
-                    :  props.Userdata.data.RtxAmountPaid,
+                    ? props.Userdata.data.AmountPaid
+                    : props.Userdata.data.RtxAmountPaid,
                   RtxChangeDue: props.isTaxInvoice
-                    ?  props.Userdata.data.ChangeDue
+                    ? props.Userdata.data.ChangeDue
                     : props.paymentType === "Credit Card"
-                    ?  props.Userdata.data.ChangeDue
-                    :  props.Userdata.data.RtxChangeDue,
+                    ? props.Userdata.data.ChangeDue
+                    : props.Userdata.data.RtxChangeDue,
                   RtxBalance: props.isTaxInvoice
-                    ?  props.Userdata.data.Balance
+                    ? props.Userdata.data.Balance
                     : props.paymentType === "Credit Card"
-                    ?  props.Userdata.data.Balance
-                    :  props.Userdata.data.RtxBalance,
-                  Discount:  props.Userdata.data.Discount,
-                  Date:  props.Userdata.data.Date,
-                  Datetrack:  props.Userdata.data.Datetrack,
-                  Department:  props.Userdata.data.department,
-                  totalTaxFinal:  props.Userdata.data.totalTaxFinal,
-                  totalTax:  props.Userdata.data.totalTax,
-                  time:  props.Userdata.data.time,
+                    ? props.Userdata.data.Balance
+                    : props.Userdata.data.RtxBalance,
+                  Discount: props.Userdata.data.Discount,
+                  Date: props.Userdata.data.Date,
+                  Datetrack: props.Userdata.data.Datetrack,
+                  Department: props.Userdata.data.department,
+                  totalTaxFinal: props.Userdata.data.totalTaxFinal,
+                  totalTax: props.Userdata.data.totalTax,
+                  time: props.Userdata.data.time,
                 })
-                .then(function () {});
+                .then(function () {
+                  knex
+                    .select()
+                    .from("sales_reports_totals")
+                    .where({ Day: props.Userdata.data.day, })
+                    .then(function (data) {
+                      sendCallback({
+                        socketId: props.socketId,
+                        data,
+                      });
+                    });
+                });
             } else {
               knex
                 .select()
                 .from("sales_reports_totals")
-                .where("Date",  props.Userdata.data.Date)
+                .where("Date", props.Userdata.data.Date)
                 .then(function (data) {
                   if (data.length !== 0) {
                     // console.log(data);
                     // console.log( props.Userdata.data);
 
                     knex("sales_reports_totals")
-                      .where("Date",  props.Userdata.data.Date)
+                      .where("Date", props.Userdata.data.Date)
                       .update({
-                        GrandTotal:  props.Userdata.data.GrandTotal + data[0].GrandTotal,
-                        AmountPaid:  props.Userdata.data.AmountPaid + data[0].AmountPaid,
-                        ChangeDue:  props.Userdata.data.ChangeDue + data[0].ChangeDue,
-                        Balance:  props.Userdata.data.Balance + data[0].Balance,
+                        GrandTotal:
+                          props.Userdata.data.GrandTotal + data[0].GrandTotal,
+                        AmountPaid:
+                          props.Userdata.data.AmountPaid + data[0].AmountPaid,
+                        ChangeDue:
+                          props.Userdata.data.ChangeDue + data[0].ChangeDue,
+                        Balance: props.Userdata.data.Balance + data[0].Balance,
                         RtxGrandTotal: props.isTaxInvoice
-                          ?  props.Userdata.data.GrandTotal + data[0].GrandTotal
+                          ? props.Userdata.data.GrandTotal + data[0].GrandTotal
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.GrandTotal + data[0].GrandTotal
-                          :  props.Userdata.data.RtxGrandTotal + data[0].RtxGrandTotal,
+                          ? props.Userdata.data.GrandTotal + data[0].GrandTotal
+                          : props.Userdata.data.RtxGrandTotal +
+                            data[0].RtxGrandTotal,
                         RtxAmountPaid: props.isTaxInvoice
-                          ?  props.Userdata.data.AmountPaid + data[0].AmountPaid
+                          ? props.Userdata.data.AmountPaid + data[0].AmountPaid
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.AmountPaid + data[0].AmountPaid
-                          :  props.Userdata.data.RtxAmountPaid + data[0].RtxAmountPaid,
+                          ? props.Userdata.data.AmountPaid + data[0].AmountPaid
+                          : props.Userdata.data.RtxAmountPaid +
+                            data[0].RtxAmountPaid,
                         RtxChangeDue: props.isTaxInvoice
-                          ?  props.Userdata.data.ChangeDue + data[0].ChangeDue
+                          ? props.Userdata.data.ChangeDue + data[0].ChangeDue
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.ChangeDue + data[0].ChangeDue
-                          :  props.Userdata.data.RtxChangeDue + data[0].RtxChangeDue,
+                          ? props.Userdata.data.ChangeDue + data[0].ChangeDue
+                          : props.Userdata.data.RtxChangeDue +
+                            data[0].RtxChangeDue,
                         RtxBalance: props.isTaxInvoice
-                          ?  props.Userdata.data.Balance + data[0].Balance
+                          ? props.Userdata.data.Balance + data[0].Balance
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.Balance + data[0].Balance
-                          :  props.Userdata.data.RtxBalance + data[0].RtxBalance,
-                        Discount:  props.Userdata.data.Discount + data[0].Discount,
+                          ? props.Userdata.data.Balance + data[0].Balance
+                          : props.Userdata.data.RtxBalance + data[0].RtxBalance,
+                        Discount:
+                          props.Userdata.data.Discount + data[0].Discount,
                         totalTaxFinal:
-                           props.Userdata.data.totalTaxFinal +
+                          props.Userdata.data.totalTaxFinal +
                           Number(data[0].totalTaxFinal),
                         totalTax:
-                           props.Userdata.data.totalTax + Number(data[0].totalTax),
+                          props.Userdata.data.totalTax +
+                          Number(data[0].totalTax),
                       })
-                      .then(function () {});
+                      .then(function () {
+                        knex
+                          .select()
+                          .from("sales_reports_totals")
+                          .where({
+                            Day: props.Userdata.data.day,
+                          })
+                          .then(function (data) {
+                            sendCallback({
+                              socketId: props.socketId,
+                              data,
+                            });
+                          });
+                      });
                   } else {
                     knex("sales_reports_totals")
                       .insert({
-                        id:  props.Userdata.data.id,
-                        Year:  props.Userdata.data.year,
-                        Day:  props.Userdata.data.day,
-                        Month:  props.Userdata.data.month,
+                        id: props.Userdata.data.id,
+                        Year: props.Userdata.data.year,
+                        Day: props.Userdata.data.day,
+                        Month: props.Userdata.data.month,
                         SrNo: MainData.length + 1,
-                        GrandTotal:  props.Userdata.data.GrandTotal,
-                        AmountPaid:  props.Userdata.data.AmountPaid,
-                        ChangeDue:  props.Userdata.data.ChangeDue,
-                        Balance:  props.Userdata.data.Balance,
+                        GrandTotal: props.Userdata.data.GrandTotal,
+                        AmountPaid: props.Userdata.data.AmountPaid,
+                        ChangeDue: props.Userdata.data.ChangeDue,
+                        Balance: props.Userdata.data.Balance,
                         RtxGrandTotal: props.isTaxInvoice
-                          ?  props.Userdata.data.GrandTotal
+                          ? props.Userdata.data.GrandTotal
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.GrandTotal
-                          :  props.Userdata.data.RtxGrandTotal,
+                          ? props.Userdata.data.GrandTotal
+                          : props.Userdata.data.RtxGrandTotal,
                         RtxAmountPaid: props.isTaxInvoice
-                          ?  props.Userdata.data.AmountPaid
+                          ? props.Userdata.data.AmountPaid
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.AmountPaid
-                          :  props.Userdata.data.RtxAmountPaid,
+                          ? props.Userdata.data.AmountPaid
+                          : props.Userdata.data.RtxAmountPaid,
                         RtxChangeDue: props.isTaxInvoice
-                          ?  props.Userdata.data.ChangeDue
+                          ? props.Userdata.data.ChangeDue
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.ChangeDue
-                          :  props.Userdata.data.RtxChangeDue,
+                          ? props.Userdata.data.ChangeDue
+                          : props.Userdata.data.RtxChangeDue,
                         RtxBalance: props.isTaxInvoice
-                          ?  props.Userdata.data.Balance
+                          ? props.Userdata.data.Balance
                           : props.paymentType === "Credit Card"
-                          ?  props.Userdata.data.Balance
-                          :  props.Userdata.data.RtxBalance,
-                        Discount:  props.Userdata.data.Discount,
-                        Date:  props.Userdata.data.Date,
-                        Datetrack:  props.Userdata.data.Datetrack,
-                        Department:  props.Userdata.data.department,
-                        totalTaxFinal:  props.Userdata.data.totalTaxFinal,
-                        totalTax:  props.Userdata.data.totalTax,
-                        time:  props.Userdata.data.time,
+                          ? props.Userdata.data.Balance
+                          : props.Userdata.data.RtxBalance,
+                        Discount: props.Userdata.data.Discount,
+                        Date: props.Userdata.data.Date,
+                        Datetrack: props.Userdata.data.Datetrack,
+                        Department: props.Userdata.data.department,
+                        totalTaxFinal: props.Userdata.data.totalTaxFinal,
+                        totalTax: props.Userdata.data.totalTax,
+                        time: props.Userdata.data.time,
                       })
-                      .then(function () {});
+                      .then(function () {
+                        knex
+                          .select()
+                          .from("sales_reports_totals")
+                          .where({
+                            Day: props.Userdata.data.day,
+                          })
+                          .then(function (data) {
+                            sendCallback({
+                              socketId: props.socketId,
+                              data,
+                            });
+                          });
+                      });
                   }
                 });
             }
