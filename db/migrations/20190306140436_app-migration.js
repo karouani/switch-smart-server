@@ -96,6 +96,7 @@ exports.up = function (knex, Promise) {
       table.integer("amountInstore").notNullable();
       table.boolean("isInstore").notNullable();
       table.string("department").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -114,6 +115,7 @@ exports.up = function (knex, Promise) {
       table.integer("alertOut").notNullable();
       table.integer("amountInstore").notNullable();
       table.boolean("isInstore").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -225,7 +227,7 @@ exports.up = function (knex, Promise) {
 exports.down = function (knex, Promise) {
   return knex.schema
     .dropTable("users")
-    .dropTable("Tabs")
+    .dropTable("Tabs") 
     .dropTable("all_Tabs")
     .dropTable("products")
     .dropTable("all_products")

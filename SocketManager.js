@@ -26,6 +26,7 @@ const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
 
 require("custom-env").env();
 
+var isProcessing = false;
 // var count = 0;
 
 // var $ipsConnected = [];
@@ -79,7 +80,7 @@ var connectedUsers = [];
 
 module.exports = function (socket) {
   socket.on("connected", () => {
-    // console.log(socket.id);  
+    // console.log(socket.id);
   });
 
   socket.on("UserConnected", (props) => {
@@ -231,11 +232,16 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-// console.log('SALESREPORT');
 
-    _SalesReports(Data, (callback) => {
-      io.emit("SALESREPORTLIST", callback);
-    });
+    if (!isProcessing) {
+      isProcessing = true;
+      _SalesReports(Data, (callback) => {
+        io.emit("SALESREPORTLIST", callback);
+      });
+    }
+    setTimeout(() => {
+      isProcessing = false;
+    }, 200);
   });
 
   socket.on("GETSALESREPORT", (data) => {
