@@ -298,6 +298,7 @@ module.exports = {
 
                     knex("sales_reports_totals")
                       .where("Date", props.Userdata.data.Date)
+                      .andWhere("Department", props.Userdata.data.department)
                       .update({
                         GrandTotal:
                           props.Userdata.data.GrandTotal + data[0].GrandTotal,
