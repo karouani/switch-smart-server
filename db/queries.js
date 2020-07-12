@@ -1,10 +1,26 @@
 const knex = require("../knex"); // the connection!
-const uuidv4 = require("uuid/v4");
+const uuidv4 = require("uuid/v1");
 const { HandelNewProducts } = require("./products");
+const moment = require("moment");
 
 function CreateId() {
   return uuidv4();
 }
+
+var check = moment(new Date());
+var day = check.format("dddd"); // => ('Monday' , 'Tuesday' ----)
+var month = check.format("MMMM"); // => ('January','February.....)
+var year = check.format("YYYY");
+
+
+const weekOfMonth = (date) => {
+  let weekInYearInedx = date.week();
+  if (date.year() != date.weekYear()) {
+    weekInYearInedx = date.clone().subtract(1, "week").week() + 1;
+  }
+  const weekIndex = weekInYearInedx - moment(date).startOf("month").week() + 1;
+  return weekIndex;
+};
 
 function _Getdata(table, type, sendCallback) {
   switch (type.state) {
@@ -61,7 +77,7 @@ module.exports = {
               Password: "1234",
               NotificationId: "",
             })
-            .then(function () {});
+            .then(function () { });
         }
         callback({
           socketId: socketId,
@@ -178,7 +194,7 @@ module.exports = {
               Password: "1234",
               NotificationId: "",
             })
-            .then(function () {});
+            .then(function () { });
         }
       });
   },
@@ -200,23 +216,23 @@ module.exports = {
         RtxGrandTotal: props.isTaxInvoice
           ? props.Userdata.data.GrandTotal
           : props.paymentType === "Credit Card"
-          ? props.Userdata.data.GrandTotal
-          : props.Userdata.data.RtxGrandTotal,
+            ? props.Userdata.data.GrandTotal
+            : props.Userdata.data.RtxGrandTotal,
         RtxAmountPaid: props.isTaxInvoice
           ? props.Userdata.data.AmountPaid
           : props.paymentType === "Credit Card"
-          ? props.Userdata.data.AmountPaid
-          : props.Userdata.data.RtxAmountPaid,
+            ? props.Userdata.data.AmountPaid
+            : props.Userdata.data.RtxAmountPaid,
         RtxChangeDue: props.isTaxInvoice
           ? props.Userdata.data.ChangeDue
           : props.paymentType === "Credit Card"
-          ? props.Userdata.data.ChangeDue
-          : props.Userdata.data.RtxChangeDue,
+            ? props.Userdata.data.ChangeDue
+            : props.Userdata.data.RtxChangeDue,
         RtxBalance: props.isTaxInvoice
           ? props.Userdata.data.Balance
           : props.paymentType === "Credit Card"
-          ? props.Userdata.data.Balance
-          : props.Userdata.data.RtxBalance,
+            ? props.Userdata.data.Balance
+            : props.Userdata.data.RtxBalance,
         Discount: props.Userdata.data.Discount,
         Date: props.Userdata.data.Date,
         Department: props.Userdata.data.department,
@@ -249,23 +265,23 @@ module.exports = {
                   RtxGrandTotal: props.isTaxInvoice
                     ? props.Userdata.data.GrandTotal
                     : props.paymentType === "Credit Card"
-                    ? props.Userdata.data.GrandTotal
-                    : props.Userdata.data.RtxGrandTotal,
+                      ? props.Userdata.data.GrandTotal
+                      : props.Userdata.data.RtxGrandTotal,
                   RtxAmountPaid: props.isTaxInvoice
                     ? props.Userdata.data.AmountPaid
                     : props.paymentType === "Credit Card"
-                    ? props.Userdata.data.AmountPaid
-                    : props.Userdata.data.RtxAmountPaid,
+                      ? props.Userdata.data.AmountPaid
+                      : props.Userdata.data.RtxAmountPaid,
                   RtxChangeDue: props.isTaxInvoice
                     ? props.Userdata.data.ChangeDue
                     : props.paymentType === "Credit Card"
-                    ? props.Userdata.data.ChangeDue
-                    : props.Userdata.data.RtxChangeDue,
+                      ? props.Userdata.data.ChangeDue
+                      : props.Userdata.data.RtxChangeDue,
                   RtxBalance: props.isTaxInvoice
                     ? props.Userdata.data.Balance
                     : props.paymentType === "Credit Card"
-                    ? props.Userdata.data.Balance
-                    : props.Userdata.data.RtxBalance,
+                      ? props.Userdata.data.Balance
+                      : props.Userdata.data.RtxBalance,
                   Discount: props.Userdata.data.Discount,
                   Date: props.Userdata.data.Date,
                   Datetrack: props.Userdata.data.Datetrack,
@@ -309,26 +325,26 @@ module.exports = {
                         RtxGrandTotal: props.isTaxInvoice
                           ? props.Userdata.data.GrandTotal + data[0].GrandTotal
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.GrandTotal + data[0].GrandTotal
-                          : props.Userdata.data.RtxGrandTotal +
+                            ? props.Userdata.data.GrandTotal + data[0].GrandTotal
+                            : props.Userdata.data.RtxGrandTotal +
                             data[0].RtxGrandTotal,
                         RtxAmountPaid: props.isTaxInvoice
                           ? props.Userdata.data.AmountPaid + data[0].AmountPaid
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.AmountPaid + data[0].AmountPaid
-                          : props.Userdata.data.RtxAmountPaid +
+                            ? props.Userdata.data.AmountPaid + data[0].AmountPaid
+                            : props.Userdata.data.RtxAmountPaid +
                             data[0].RtxAmountPaid,
                         RtxChangeDue: props.isTaxInvoice
                           ? props.Userdata.data.ChangeDue + data[0].ChangeDue
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.ChangeDue + data[0].ChangeDue
-                          : props.Userdata.data.RtxChangeDue +
+                            ? props.Userdata.data.ChangeDue + data[0].ChangeDue
+                            : props.Userdata.data.RtxChangeDue +
                             data[0].RtxChangeDue,
                         RtxBalance: props.isTaxInvoice
                           ? props.Userdata.data.Balance + data[0].Balance
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.Balance + data[0].Balance
-                          : props.Userdata.data.RtxBalance + data[0].RtxBalance,
+                            ? props.Userdata.data.Balance + data[0].Balance
+                            : props.Userdata.data.RtxBalance + data[0].RtxBalance,
                         Discount:
                           props.Userdata.data.Discount + data[0].Discount,
                         totalTaxFinal:
@@ -367,23 +383,23 @@ module.exports = {
                         RtxGrandTotal: props.isTaxInvoice
                           ? props.Userdata.data.GrandTotal
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.GrandTotal
-                          : props.Userdata.data.RtxGrandTotal,
+                            ? props.Userdata.data.GrandTotal
+                            : props.Userdata.data.RtxGrandTotal,
                         RtxAmountPaid: props.isTaxInvoice
                           ? props.Userdata.data.AmountPaid
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.AmountPaid
-                          : props.Userdata.data.RtxAmountPaid,
+                            ? props.Userdata.data.AmountPaid
+                            : props.Userdata.data.RtxAmountPaid,
                         RtxChangeDue: props.isTaxInvoice
                           ? props.Userdata.data.ChangeDue
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.ChangeDue
-                          : props.Userdata.data.RtxChangeDue,
+                            ? props.Userdata.data.ChangeDue
+                            : props.Userdata.data.RtxChangeDue,
                         RtxBalance: props.isTaxInvoice
                           ? props.Userdata.data.Balance
                           : props.paymentType === "Credit Card"
-                          ? props.Userdata.data.Balance
-                          : props.Userdata.data.RtxBalance,
+                            ? props.Userdata.data.Balance
+                            : props.Userdata.data.RtxBalance,
                         Discount: props.Userdata.data.Discount,
                         Date: props.Userdata.data.Date,
                         Datetrack: props.Userdata.data.Datetrack,
@@ -434,6 +450,18 @@ module.exports = {
       .then(function (data) {
         sendCallback({
           socketId: props.socketId,
+          data,
+        });
+      });
+  },
+
+  _GetTicketsReports(props, sendCallback) {
+    knex
+      .select()
+      .from("sales_reports_tikets")
+      .where({ Datetrack: props.date })
+      .then(function (data) {
+        sendCallback({
           data,
         });
       });
@@ -570,4 +598,67 @@ module.exports = {
       });
     });
   },
+
+  _StartWorkPeroid(props, sendCallback) {
+    var week = `week_` + weekOfMonth(moment(new Date()));
+    var tempId = CreateId();
+    knex("work_period")
+      .insert({
+        id: tempId,
+        year,
+        month,
+        day,
+        week,
+        dateStarted: props.dateStarted,
+        dateStartedString: props.dateStartedString,
+        dateEnded: "",
+        dateEndedString: "",
+        time: props.time,
+        timeEnded: "",
+        date: props.date,
+        note: props.note,
+        department: props.department,
+        workedFor: "",
+        ticket_count: 0,
+        sales_total: 0,
+        isOpen: true,
+      })
+      .then(function () {
+        knex
+          .select()
+          .from("work_period")
+          .where({ id: tempId })
+          .then(function (data) {
+            sendCallback({ isDone: true, data });
+          });
+      });
+  },
+
+  _EndWorkPeroid(props, sendCallback) {
+    console.log(props);
+
+    knex("work_period")
+      .where("id", props.id)
+      .update({
+        dateEnded: props.dateEnded,
+        dateEndedString: props.dateEndedString,
+        timeEnded: props.timeEnded,
+        workedFor: props.workedFor,
+        isOpen: false,
+      })
+      .then(function () {
+        knex
+          .select()
+          .from("work_period")
+          .then(function (data) {
+            sendCallback({ isDone: true, data });
+          });
+      });
+  },
+
+  _GetWorkPeroid(props, sendCallback) {
+
+  },
+
+
 };

@@ -18,14 +18,19 @@ const {
   _GetBackUp,
   _GetSalesReports,
   _getAllUsers,
-  _GetAllSalesReports,
+  _GetAllSalesReports, 
+  _StartWorkPeroid, 
+  _EndWorkPeroid,
+  _GetTicketsReports
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
 const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
+const { SetGroups, GetGroups, DeleteGroups } = require("./db/group");
 
 require("custom-env").env();
 
+var isProcessing = false;
 // var count = 0;
 
 // var $ipsConnected = [];
@@ -70,7 +75,7 @@ function sendDeliveryNote(data) {
         data: data.props,
       };
 
-      HandelNewProducts(datalist, (callback) => {});
+      HandelNewProducts(datalist, (callback) => { });
     }
   });
 }
@@ -79,7 +84,7 @@ var connectedUsers = [];
 
 module.exports = function (socket) {
   socket.on("connected", () => {
-    // console.log(socket.id);  
+    // console.log(socket.id);
   });
 
   socket.on("UserConnected", (props) => {
@@ -158,7 +163,7 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-    _UpdateUsersDepartment(Data, (callback) => {});
+    _UpdateUsersDepartment(Data, (callback) => { });
   });
 
   socket.on(GETDEPARTMENTS, (data) => {
@@ -231,11 +236,16 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-// console.log('SALESREPORT');
 
-    _SalesReports(Data, (callback) => {
-      io.emit("SALESREPORTLIST", callback);
-    });
+    if (!isProcessing) {
+      isProcessing = true;
+      _SalesReports(Data, (callback) => {
+        io.emit("SALESREPORTLIST", callback);
+      });
+    }
+    setTimeout(() => {
+      isProcessing = false;
+    }, 200);
   });
 
   socket.on("GETSALESREPORT", (data) => {
@@ -263,6 +273,18 @@ module.exports = function (socket) {
         "SALESREPORTSALETALL",
         revicedCallback.data
       );
+    });
+  });
+
+  socket.on("GETSALESTICKETS", (data) => {
+    _GetTicketsReports(data, (callback) => {
+      io.emit("SALESTICKETRESULT", callback.data);
+    });
+  });
+  
+  socket.on("UPDATENEWPROUDCT", (data) => {
+    HandelNewProducts(data, (callback) => {
+      io.emit("UPDATEPRODUSTS", callback);
     });
   });
 
@@ -300,10 +322,51 @@ module.exports = function (socket) {
     });
   });
 
+  socket.on("SETGROUP", (datalist) => {
+    var data = {
+      data: datalist,
+      socketId: socket.id,
+    };
+
+    SetGroups(data, (callback) => {
+      io.emit("GROUPSET", callback);
+    });
+  });
+
+  socket.on("GETGROUPS", () => {
+    GetGroups(socket.id, (callback) => {
+      io.emit("GROUPSLIST", callback);
+    });
+  });
+
+  socket.on("DELETEGROUP", (props) => {
+    var data = {
+      data: props,
+      socketId: socket.id,
+    };
+
+    DeleteGroups(data, (callback) => {
+      io.emit("GROUPSET", callback);
+    });
+  });
+
   socket.on(HANDEL_WORKPERIODS, (data) => {
     let Data = {
       Userdata: data,
       socketId: socket.id,
     };
   });
+
+  socket.on("STARTWORKPEROID", (props) => {
+    _StartWorkPeroid(props, reciveCallback => {
+      io.emit("WORKPEROID", reciveCallback.data) 
+    })
+  })
+
+  socket.on("ENDWORKPEROID", (props) => {
+    _EndWorkPeroid(props, reciveCallback => {    
+      io.emit("WORKPEROIDENDED", reciveCallback.data)
+    })
+  })
+
 };

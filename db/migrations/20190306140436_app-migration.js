@@ -16,6 +16,7 @@ exports.up = function (knex, Promise) {
       table.string("color").notNullable();
       table.string("buttonType").notNullable();
       table.boolean("isInstore").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.string("department").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
@@ -28,6 +29,7 @@ exports.up = function (knex, Promise) {
       table.string("color").notNullable();
       table.string("buttonType").notNullable();
       table.boolean("isInstore").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -96,6 +98,7 @@ exports.up = function (knex, Promise) {
       table.integer("amountInstore").notNullable();
       table.boolean("isInstore").notNullable();
       table.string("department").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -114,6 +117,7 @@ exports.up = function (knex, Promise) {
       table.integer("alertOut").notNullable();
       table.integer("amountInstore").notNullable();
       table.boolean("isInstore").notNullable();
+      table.boolean("isTaxEnabled").notNullable();
       table.timestamp("date").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -153,13 +157,13 @@ exports.up = function (knex, Promise) {
       table.integer("Discount").notNullable();
       table.integer("RtxGrandTotal").notNullable();
       table.integer("RtxAmountPaid").notNullable();
-      table.integer("RtxChangeDue").notNullable(); 
+      table.integer("RtxChangeDue").notNullable();
       table.integer("RtxBalance").notNullable();
       table.string("Date").notNullable();
       table.string("Department").notNullable();
       table.string("User").notNullable();
       table.string("PaymentType").notNullable();
-      table.boolean("isTaxInvoice").notNullable(); 
+      table.boolean("isTaxInvoice").notNullable();
       table.text("Note").notNullable();
       table.decimal("totalTaxFinal").notNullable();
       table.decimal("totalTax").notNullable();
@@ -178,17 +182,24 @@ exports.up = function (knex, Promise) {
       table.timestamp("timestamp").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
+    .createTable("group", function (table) {
+      table.increments("key");
+      table.string("id").notNullable();
+      table.string("group").notNullable();
+      table.jsonb("recipes").notNullable();
+      table.jsonb("colors").notNullable();
+    })
     .createTable("sales_reports_totals", function (table) {
       table.increments("key");
       table.string("id").notNullable();
       table.string("Year").notNullable();
       table.string("Day").notNullable();
-      table.string("Month").notNullable(); 
+      table.string("Month").notNullable();
       table.integer("SrNo").notNullable();
       table.integer("GrandTotal").notNullable();
       table.integer("AmountPaid").notNullable();
       table.integer("ChangeDue").notNullable();
-      table.integer("Balance").notNullable(); 
+      table.integer("Balance").notNullable();
       table.integer("Discount").notNullable();
       table.integer("RtxGrandTotal").notNullable();
       table.integer("RtxAmountPaid").notNullable();
@@ -200,6 +211,29 @@ exports.up = function (knex, Promise) {
       table.decimal("totalTaxFinal").notNullable();
       table.decimal("totalTax").notNullable();
       table.string("time").notNullable();
+      table.timestamp("timestamp").defaultTo(knex.fn.now());
+      table.timestamp("modified").defaultTo(knex.fn.now());
+    })
+    .createTable("work_period", function (table) {
+      table.increments("key");
+      table.string("id").notNullable();
+      table.string("year").notNullable();
+      table.string("month").notNullable();
+      table.string("day").notNullable();
+      table.string("week").notNullable();
+      table.string("dateStarted").notNullable();
+      table.string("dateStartedString").notNullable();
+      table.string("dateEnded").notNullable();
+      table.string("dateEndedString").notNullable();
+      table.string("time").notNullable();
+      table.string("timeEnded").notNullable();
+      table.string("date").notNullable();
+      table.string("note").notNullable();
+      table.string("department").notNullable();
+      table.string("workedFor").notNullable();
+      table.integer("ticket_count").notNullable();
+      table.integer("sales_total").notNullable();
+      table.boolean("isOpen").notNullable();
       table.timestamp("timestamp").defaultTo(knex.fn.now());
       table.timestamp("modified").defaultTo(knex.fn.now());
     })
@@ -230,6 +264,8 @@ exports.down = function (knex, Promise) {
     .dropTable("products")
     .dropTable("all_products")
     .dropTable("mulitProducts")
+    .dropTable("work_period")
+    .dropTable("group")
     .dropTable("all_mulitProducts")
     .dropTable("inventory")
     .dropTable("inventory_transfer")

@@ -25,7 +25,6 @@ module.exports = {
 
     switch (props.data._type) {
       case "set":
-        // console.log(props);
         var recipe =
           props.data.recipe === "" ? props.data.group.group : props.data.recipe;
         var productKey = CreateId();
@@ -44,6 +43,7 @@ module.exports = {
                   color: props.data.group.colors.textColor,
                   buttonType: "default",
                   isInstore: false,
+                  isTaxEnabled: true,
                   department: props.from,
                 })
                 .then(function () {
@@ -54,9 +54,9 @@ module.exports = {
                       background: props.data.group.colors.backgroundColor,
                       color: props.data.group.colors.textColor,
                       buttonType: "default",
-                      isInstore: false,
+                      isInstore: false, isTaxEnabled: true,
                     })
-                    .then(function () {});
+                    .then(function () { });
                 });
             }
             knex("products")
@@ -135,9 +135,11 @@ module.exports = {
                     isTaxEnabled: true,
                     isMulity,
                   })
-                  .then(function () {});
+                  .then(function () { });
                 if (isMulity) {
                   props.data.portion.map((data) => {
+                    console.log(props.from);
+
                     knex("mulitProducts")
                       .insert({
                         id: CreateId(),
@@ -153,7 +155,33 @@ module.exports = {
                         alertOut: parseInt(data.alertOut),
                         amountInstore: 0,
                         isInstore: false,
+                        isTaxEnabled: true,
                         department: props.from,
+                      })
+                      .then((result) => {
+                        console.log(result);
+                      })
+                      .catch((err) => {
+                        console.log(err);
+                      });
+
+
+                    knex("all_mulitProducts")
+                      .insert({
+                        id: CreateId(),
+                        productName: props.data.name,
+                        sallingprice: parseInt(data.price),
+                        initalPrice: parseInt(data.price),
+                        qnt: 1,
+                        barcode1: data.barcode1,
+                        barcode2: data.barcode2,
+                        barcode3: data.barcode3,
+                        barcode4: data.barcode4,
+                        barcode5: data.barcode5,
+                        alertOut: parseInt(data.alertOut),
+                        amountInstore: 0,
+                        isInstore: false,
+                        isTaxEnabled: true,
                       })
                       .then((result) => {
                         // console.log(result);
@@ -161,32 +189,8 @@ module.exports = {
                       .catch((err) => {
                         // console.log(err);
                       });
-
-                    props.data.portion.map((data) => {
-                      knex("all_mulitProducts")
-                        .insert({
-                          id: CreateId(),
-                          productName: props.data.name,
-                          sallingprice: parseInt(data.price),
-                          initalPrice: parseInt(data.price),
-                          qnt: 1,
-                          barcode1: data.barcode1,
-                          barcode2: data.barcode2,
-                          barcode3: data.barcode3,
-                          barcode4: data.barcode4,
-                          barcode5: data.barcode5,
-                          alertOut: parseInt(data.alertOut),
-                          amountInstore: 0,
-                          isInstore: false,
-                        })
-                        .then((result) => {
-                          // console.log(result);
-                        })
-                        .catch((err) => {
-                          // console.log(err);
-                        });
-                    });
                   });
+
 
                   return sendCallback({
                     from: props.from,
@@ -479,7 +483,7 @@ module.exports = {
                 .update({
                   isInstore: true,
                 })
-                .then(function (data) {});
+                .then(function (data) { });
             });
         });
 
@@ -497,7 +501,7 @@ module.exports = {
             .update({
               amountInstore: list.amountInstore,
             })
-            .then(function (data) {});
+            .then(function (data) { });
         });
         break;
 
@@ -519,6 +523,7 @@ module.exports = {
           });
 
         break;
+
       default:
         break;
     }
