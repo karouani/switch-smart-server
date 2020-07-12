@@ -160,6 +160,7 @@ exports.up = function (knex, Promise) {
       table.integer("RtxChangeDue").notNullable();
       table.integer("RtxBalance").notNullable();
       table.string("Date").notNullable();
+      table.string("Datetrack").notNullable();
       table.string("Department").notNullable();
       table.string("User").notNullable();
       table.string("PaymentType").notNullable();

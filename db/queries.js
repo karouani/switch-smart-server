@@ -235,6 +235,7 @@ module.exports = {
             : props.Userdata.data.RtxBalance,
         Discount: props.Userdata.data.Discount,
         Date: props.Userdata.data.Date,
+        Datetrack: props.Userdata.data.Datetrack,
         Department: props.Userdata.data.department,
         User: props.Userdata.data.user,
         PaymentType: props.Userdata.data.paymentType,
@@ -314,7 +315,6 @@ module.exports = {
 
                     knex("sales_reports_totals")
                       .where("Date", props.Userdata.data.Date)
-                      .andWhere("Department", props.Userdata.data.department)
                       .update({
                         GrandTotal:
                           props.Userdata.data.GrandTotal + data[0].GrandTotal,
@@ -460,7 +460,7 @@ module.exports = {
     knex
       .select()
       .from("sales_reports_tikets")
-      .where({ Datetrack: props.date })
+      .where({ Datetrack: props })
       .then(function (data) {
         sendCallback({
           data,

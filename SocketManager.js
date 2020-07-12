@@ -278,6 +278,7 @@ module.exports = function (socket) {
 
   socket.on("GETSALESTICKETS", (data) => {
     _GetTicketsReports(data, (callback) => {
+      console.log(callback);
       io.emit("SALESTICKETRESULT", callback.data);
     });
   });
