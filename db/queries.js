@@ -431,11 +431,33 @@ module.exports = {
   },
 
   _GetSalesReports(props, sendCallback) {
-    // console.log(props);
     knex
       .select()
       .from("sales_reports_totals")
       .where({ [props.Userdata.dateType]: props.Userdata.date })
+      .then(function (data) {
+        sendCallback({
+          socketId: props.socketId,
+          data,
+        });
+      });
+  },
+
+  _SetTranferReports(props, sendCallback) {
+    knex("inventory_transfer")
+      .insert(trans)
+      .then(function (data) {
+        sendCallback({
+          socketId: props.socketId,
+          data,
+        });
+      });
+  },
+
+  _GetTranferReports(props, sendCallback) {
+    knex
+      .select()
+      .from("inventory_transfer")
       .then(function (data) {
         sendCallback({
           socketId: props.socketId,
@@ -481,6 +503,7 @@ module.exports = {
         else sendCallback({ socketId: props.socketId, data: { exist: false } });
       });
   },
+
   _SetDepartment(props, sendCallback) {
     _Getdata(
       "departments_config",
@@ -636,7 +659,7 @@ module.exports = {
   },
 
   _EndWorkPeroid(props, sendCallback) {
-    console.log(props);
+    // console.log(props);
 
     knex("work_period")
       .where("id", props.id)

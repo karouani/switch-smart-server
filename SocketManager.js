@@ -128,6 +128,10 @@ module.exports = function (socket) {
     });
   });
 
+  socket.on("INVENTORY_TRANSFER",(props)=>{
+    
+  })
+
   socket.on("GETPRODUCTES", (props) => {
     var data = {
       socketId: socket.id,
@@ -278,7 +282,7 @@ module.exports = function (socket) {
 
   socket.on("GETSALESTICKETS", (data) => {
     _GetTicketsReports(data, (callback) => {
-      console.log(callback);
+      // console.log(callback);
       io.emit("SALESTICKETRESULT", callback.data);
     });
   });
