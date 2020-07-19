@@ -18,14 +18,14 @@ const {
   _GetBackUp,
   _GetSalesReports,
   _getAllUsers,
-  _GetAllSalesReports, 
-  _StartWorkPeroid, 
+  _GetAllSalesReports,
+  _StartWorkPeroid,
   _EndWorkPeroid,
-  _GetTicketsReports
+  _GetTicketsReports,
+  _RunBackUp,
 } = require("./db/queries");
 const { HandelNewProducts } = require("./db/products");
 require("custom-env").env();
-const { StartWorkPeriod, EndWorkPeriod } = require("./actions/WorkPeriod");
 const { SetGroups, GetGroups, DeleteGroups } = require("./db/group");
 
 require("custom-env").env();
@@ -75,7 +75,7 @@ function sendDeliveryNote(data) {
         data: data.props,
       };
 
-      HandelNewProducts(datalist, (callback) => { });
+      HandelNewProducts(datalist, (callback) => {});
     }
   });
 }
@@ -128,9 +128,7 @@ module.exports = function (socket) {
     });
   });
 
-  socket.on("INVENTORY_TRANSFER",(props)=>{
-    
-  })
+  socket.on("INVENTORY_TRANSFER", (props) => {});
 
   socket.on("GETPRODUCTES", (props) => {
     var data = {
@@ -167,7 +165,7 @@ module.exports = function (socket) {
       Userdata: data,
       socketId: socket.id,
     };
-    _UpdateUsersDepartment(Data, (callback) => { });
+    _UpdateUsersDepartment(Data, (callback) => {});
   });
 
   socket.on(GETDEPARTMENTS, (data) => {
@@ -286,7 +284,7 @@ module.exports = function (socket) {
       io.emit("SALESTICKETRESULT", callback.data);
     });
   });
-  
+
   socket.on("UPDATENEWPROUDCT", (data) => {
     HandelNewProducts(data, (callback) => {
       io.emit("UPDATEPRODUSTS", callback);
@@ -363,15 +361,25 @@ module.exports = function (socket) {
   });
 
   socket.on("STARTWORKPEROID", (props) => {
-    _StartWorkPeroid(props, reciveCallback => {
-      io.emit("WORKPEROID", reciveCallback.data) 
-    })
-  })
+    _StartWorkPeroid(props, (reciveCallback) => {
+      io.emit("WORKPEROID", reciveCallback.data);
+    });
+  });
 
   socket.on("ENDWORKPEROID", (props) => {
-    _EndWorkPeroid(props, reciveCallback => {    
-      io.emit("WORKPEROIDENDED", reciveCallback.data)
-    })
-  })
+    _EndWorkPeroid(props, (reciveCallback) => {
+      io.emit("WORKPEROIDENDED", reciveCallback.data);
+    });
+  });
 
+  socket.on("HANDEL_REPORTS_BACKUP", (props) => {
+    const data = {
+      data: props,
+      socketId: socket.id,
+    };
+    _RunBackUp(data, (reciveCallback) => {
+      // console.log(reciveCallback);
+      io.to(reciveCallback.socketId).emit("HANDEL_REPORTS_BACKUP_ISDONE", reciveCallback);
+    });
+  });
 };

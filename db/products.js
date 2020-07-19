@@ -159,10 +159,10 @@ module.exports = {
                         department: props.from,
                       })
                       .then((result) => {
-                        console.log(result);
+                        // console.log(result);
                       })
                       .catch((err) => {
-                        console.log(err);
+                        // console.log(err);
                       });
 
 
