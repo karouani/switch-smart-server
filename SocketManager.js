@@ -291,11 +291,11 @@ module.exports = function (socket) {
     });
   });
 
-  socket.on("UPDATENEWPROUDCT", (data) => {
-    HandelNewProducts(data, (callback) => {
-      io.emit("UPDATEPRODUSTS", callback);
-    });
-  });
+  // socket.on("UPDATENEWPROUDCT", (data) => {
+  //   HandelNewProducts(data, (callback) => {
+  //     io.emit("UPDATEPRODUSTS", callback);
+  //   });
+  // });
 
   socket.on("GETALLPRODUCTS", () => {
     var data = {
